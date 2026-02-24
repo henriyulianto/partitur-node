@@ -1,0 +1,39 @@
+{
+  "name": "partitur-node",
+  "version": "1.0.0",
+  "description": "Partitur music player - NodeJS version with Express and EJS",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "build": "node build.js",
+    "preview": "node server.js"
+  },
+  "keywords": [
+    "music",
+    "partitur",
+    "sheet-music",
+    "express",
+    "ejs"
+  ],
+  "author": "Henri Yulianto",
+  "license": "MIT",
+  "packageManager": "bun@1.3.9",
+  "dependencies": {
+    "compression": "^1.8.1",
+    "cors": "^2.8.6",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "js-yaml": "^4.1.1",
+    "marked": "^17.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.14"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

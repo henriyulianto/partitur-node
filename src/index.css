@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
+
+@layer base {
+  :root {
+    --background: 40 33% 98%;
+    --foreground: 220 20% 15%;
+
+    --card: 40 30% 96%;
+    --card-foreground: 220 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 15%;
+
+    --primary: 220 25% 20%;
+    --primary-foreground: 40 30% 96%;
+
+    --secondary: 35 30% 92%;
+    --secondary-foreground: 220 20% 15%;
+
+    --muted: 35 20% 93%;
+    --muted-foreground: 220 10% 46%;
+
+    --accent: 38 80% 55%;
+    --accent-foreground: 220 25% 12%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 35 20% 88%;
+    --input: 35 20% 88%;
+    --ring: 38 80% 55%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 40 25% 97%;
+    --sidebar-foreground: 220 15% 30%;
+    --sidebar-primary: 220 25% 20%;
+    --sidebar-primary-foreground: 40 30% 96%;
+    --sidebar-accent: 38 60% 90%;
+    --sidebar-accent-foreground: 220 25% 15%;
+    --sidebar-border: 35 20% 90%;
+    --sidebar-ring: 38 80% 55%;
+
+    /* Badge Notasi colors */
+    --badge-not-angka: 210 70% 50%;
+    --badge-not-angka-fg: 0 0% 100%;
+    --badge-not-balok: 262 60% 52%;
+    --badge-not-balok-fg: 0 0% 100%;
+    --badge-not-kombinasi: 24 80% 52%;
+    --badge-not-kombinasi-fg: 0 0% 100%;
+
+    /* Badge Karya colors */
+    --badge-komposisi: 160 55% 38%;
+    --badge-komposisi-fg: 0 0% 100%;
+    --badge-aransemen: 340 65% 50%;
+    --badge-aransemen-fg: 0 0% 100%;
+    --badge-salinan: 45 75% 45%;
+    --badge-salinan-fg: 0 0% 100%;
+
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Source Sans 3', sans-serif;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}

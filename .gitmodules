@@ -1,0 +1,3 @@
+[submodule "lagu"]
+	path = lagu
+	url = https://github.com/henriyulianto/partitur-data.git
