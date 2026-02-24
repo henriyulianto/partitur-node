@@ -1,0 +1,25 @@
+<%- include('layouts/minimal') %>
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card border-danger">
+      <div class="card-header bg-danger text-white">
+        <h3 class="card-title mb-0">
+          <i class="fas fa-exclamation-triangle"></i> Error
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-danger">
+          <h4>Terjadi Kesalahan</h4>
+          <p><%= error %></p>
+        </div>
+        
+        <div class="text-center mt-4">
+          <a href="/" class="btn btn-primary">
+            <i class="fas fa-home"></i> Kembali ke Beranda
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

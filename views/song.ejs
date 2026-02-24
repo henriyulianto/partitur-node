@@ -1,0 +1,160 @@
+<%- include('layouts/minimal') %>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <h1 class="card-title mb-0">
+              <%= config.workInfo.title %>
+            </h1>
+            <span class="badge bg-primary">
+              <%= config.workInfo.instrument %>
+            </span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- Song Information -->
+          <div class="row mb-4">
+            <div class="col-md-8">
+              <h4>Informasi Lagu</h4>
+              <table class="table table-striped">
+                <tr>
+                  <td><strong>Judul:</strong></td>
+                  <td>
+                    <%= config.workInfo.title %>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Instrument:</strong></td>
+                  <td>
+                    <%= config.workInfo.instrument %>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Tipe:</strong></td>
+                  <td>
+                    <%= config.workInfo.workType %>
+                  </td>
+                </tr>
+                <% if (config.workInfo.composer) { %>
+                  <tr>
+                    <td><strong>Komposer:</strong></td>
+                    <td>
+                      <%= config.workInfo.composer %>
+                    </td>
+                  </tr>
+                  <% } %>
+                    <% if (config.workInfo.arranger) { %>
+                      <tr>
+                        <td><strong>Aransemen:</strong></td>
+                        <td>
+                          <%= config.workInfo.arranger %>
+                        </td>
+                      </tr>
+                      <% } %>
+              </table>
+            </div>
+
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5>🎵 Pemutar Musik</h5>
+                </div>
+                <div class="card-body">
+                  <!-- Audio Player Container -->
+                  <div id="audio-player-container">
+                    <audio id="audio-player" controls class="w-100">
+                      <source id="audio-source" src="" type="audio/m4a">
+                      Browser Anda tidak mendukung audio element.
+                    </audio>
+                  </div>
+
+                  <!-- Loading Indicator -->
+                  <div id="loading" class="text-center mt-3">
+                    <div class="spinner-border" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Memuat partitur...</p>
+                  </div>
+
+                  <!-- Player Controls -->
+                  <div id="player-controls" class="mt-3">
+                    <div class="btn-group w-100" role="group">
+                      <button id="play-pause-btn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Play
+                      </button>
+                      <button id="stop-btn" class="btn btn-secondary">
+                        <i class="fas fa-stop"></i> Stop
+                      </button>
+                      <button id="reset-btn" class="btn btn-warning">
+                        <i class="fas fa-redo"></i> Reset
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Music Sheet Display -->
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5>📝 Partitur Digital</h5>
+                </div>
+                <div class="card-body">
+                  <!-- SVG Container for Music Sheet -->
+                  <div id="svg-container" class="text-center">
+                    <!-- Loading indicator -->
+                    <div id="loading-werk" class="alert alert-info">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Memuat <%= config.workInfo.title %>...
+                    </div>
+                  </div>
+
+                  <!-- Navigation Controls -->
+                  <div id="button_scroll_to_top" class="position-fixed"
+                    style="bottom: 20px; right: 20px; display: none;">
+                    <button class="btn btn-primary btn-lg">
+                      <i class="fas fa-arrow-up"></i>
+                    </button>
+                  </div>
+
+                  <!-- Bar Information -->
+                  <div id="bar_spy" class="position-fixed" style="top: 100px; right: 20px; display: none;">
+                    <div class="card">
+                      <div class="card-body">
+                        <h6>Informasi Bar</h6>
+                        <p>Bar saat ini: <span id="current_bar">1</span></p>
+                        <p>Total bar: <span id="total_bars">
+                            <%= config.musicalStructure.totalMeasures %>
+                          </span></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuration Script -->
+  <script>
+    // Pass configuration to hyplayer
+    var configJson = JSON.stringify(config);
+    window.ROOT_LAGU = '<%= ROOT_LAGU %>';
+    window.CONFIG = '<%- configJson %>';
+    window.WORK_ID = '<%= workId %>';
+
+    // Initialize player when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+      // The hyplayer.js will automatically initialize and load the work
+      console.log('🎵 Initializing player for:', window.WORK_ID);
+    });
+  </script>

@@ -1,0 +1,90 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+# Matches multiple files with brace expansion notation
+# Set default charset
+[*.{js,jsx,ts,tsx,json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Ruby files
+[*.rb]
+indent_style = space
+indent_size = 2
+
+# HTML, CSS, SCSS files
+[*.{html,htm,css,scss,sass}]
+indent_style = space
+indent_size = 2
+
+# Markdown files
+[*.md]
+indent_style = space
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# JavaScript configuration files
+[*.config.js]
+indent_style = space
+indent_size = 2
+
+# LilyPond files
+[*.ly]
+indent_style = space
+indent_size = 2
+
+# Git files
+[.gitignore]
+indent_style = space
+indent_size = 2
+
+# Gemfile
+[Gemfile]
+indent_style = space
+indent_size = 2
+
+# Jekyll config files
+[_config.yml]
+indent_style = space
+indent_size = 2
+
+# CSV files (preserve indentation but ensure LF)
+[*.csv]
+end_of_line = lf
+
+# Tab files (preserve tabs but ensure LF)
+[*.tab]
+end_of_line = lf
+
+# TSV files (preserve tabs but ensure LF)
+[*.tsv]
+end_of_line = lf
+
+# SQL files
+[*.sql]
+indent_style = space
+indent_size = 2
+
+# Shell scripts
+[*.{sh,bash,fish,ksh,zsh}]
+indent_style = space
+indent_size = 2
+
+# Batch files (Windows-specific, keep CRLF but normalize other aspects)
+[*.{bat,cmd,ps1}]
+end_of_line = crlf
+indent_style = space
+indent_size = 2
