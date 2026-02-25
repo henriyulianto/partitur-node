@@ -30,23 +30,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: "4.68.1"
-          command: pages deploy dist --project-name=animasi-partitur
-
-      - name: Check deployment status
-        env:
-          CMD_OUTPUT: ${{ steps.deploy.outputs.command-output }}
-        run:
-          if [ -z "$CMD_OUTPUT" ]; then
-            echo "❌ Deployment failed"
-            exit 1
-          fi
-          echo "✅ Deployment successful"
-
-      - name: Output deployment URL
-        env:
-          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
-          DEPLOYMENT_ALIAS_URL: ${{ steps.deploy.outputs.deployment-alias-url }}
-        run: |
-          echo "🚀 Deployed to: $DEPLOYMENT_URL"
-          echo "🔗 Alias: $DEPLOYMENT_ALIAS_URL"
+          command: |
+            pages deploy dist --project-name=animasi-partitur
