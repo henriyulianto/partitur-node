@@ -1,12 +1,12 @@
 import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import LaguCard from "@/components/LaguCard";
-import { cariLagu } from "@/data/lagu";
+import { koleksiLagu } from "@/models/KoleksiLagu";
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get("kata-kunci") || "";
-  const results = cariLagu(keyword);
+  const results = koleksiLagu.cariLagu(keyword);
 
   return (
     <AppLayout>

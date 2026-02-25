@@ -1,11 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AppLayout from "@/components/AppLayout";
 import LaguCard from "@/components/LaguCard";
-import { daftarLagu, TipeNotasi, JenisKarya } from "@/data/lagu";
 import { Filter, ArrowUpDown, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { TipeNotasi, JenisKarya } from "@/types/interfaces";
+import type { Lagu } from "@/types/interfaces";
+import { koleksiLagu } from "@/models/KoleksiLagu";
 
 type SortOrder = "default" | "asc" | "desc";
 
@@ -29,6 +31,12 @@ const Index = () => {
   const [activeKarya, setActiveKarya] = useState<JenisKarya | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>("default");
   const [filterOpen, setFilterOpen] = useState(true);
+  const [daftarLagu, setDaftarLagu] = useState<Lagu[]>([]);
+
+  // Load songs data
+  useEffect(() => {
+    koleksiLagu.getDaftarLagu().then(setDaftarLagu);
+  }, []);
 
   const filtered = useMemo(() => {
     let result = daftarLagu.filter((l) => {
@@ -39,7 +47,7 @@ const Index = () => {
     if (sortOrder === "asc") result = [...result].sort((a, b) => a.judul.localeCompare(b.judul));
     if (sortOrder === "desc") result = [...result].sort((a, b) => b.judul.localeCompare(a.judul));
     return result;
-  }, [activeNotasi, activeKarya, sortOrder]);
+  }, [daftarLagu, activeNotasi, activeKarya, sortOrder]);
 
   const hasFilter = activeNotasi || activeKarya;
   const cycleSortOrder = () => setSortOrder((s) => s === "default" ? "asc" : s === "asc" ? "desc" : "default");

@@ -1,9 +1,10 @@
-import { ReactNode, useState, useRef, useEffect } from "react";
+import { ReactNode, useState, useRef, useEffect, useMemo } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { Music, Search, Menu, X, ChevronRight, ChevronDown, Home } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { daftarLagu, getLaguBySlug } from "@/data/lagu";
+import { koleksiLagu } from "@/models/KoleksiLagu";
 import { cn } from "@/lib/utils";
+import type { Lagu } from "@/types/interfaces";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -13,9 +14,15 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [breadcrumbDropdownOpen, setBreadcrumbDropdownOpen] = useState(false);
+  const [daftarLagu, setDaftarLagu] = useState<Lagu[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Load songs data
+  useEffect(() => {
+    koleksiLagu.getDaftarLagu().then(setDaftarLagu);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,13 +45,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
   // Breadcrumb logic
   const pathSegments = location.pathname.split("/").filter(Boolean);
   const isSearch = pathSegments[0] === "cari";
-  const currentLagu = !isSearch && pathSegments[0] ? getLaguBySlug(pathSegments[0]) : undefined;
+  const currentLagu = !isSearch && pathSegments[0] ? koleksiLagu.getLaguBySlug(pathSegments[0]) : undefined;
   const isDetailPage = !!currentLagu;
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
         <div className="flex h-14 items-center gap-4 px-4 md:px-6">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -88,7 +95,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   </button>
 
                   {breadcrumbDropdownOpen && (
-                    <div className="absolute top-full left-0 mt-1.5 w-56 rounded-lg border bg-popover shadow-lg z-[60] py-1 animate-in fade-in-0 zoom-in-95">
+                    <div className="absolute top-full left-0 mt-1.5 w-56 rounded-lg border bg-popover shadow-lg z-60 py-1 animate-in fade-in-0 zoom-in-95">
                       <p className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Pilih Lagu
                       </p>
@@ -196,6 +203,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
             <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm md:ml-auto">
               <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
                 Beranda
+              </Link>
+              <Link to="/admin/api-config" className="text-muted-foreground hover:text-foreground transition-colors">
+                API Config
               </Link>
               {daftarLagu.slice(0, 3).map((lagu) => (
                 <Link

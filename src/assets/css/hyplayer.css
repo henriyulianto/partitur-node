@@ -1,0 +1,440 @@
+/* =============================================================================
+   🎼 BACH SCORE VIEWER - COMPLETE STYLESHEET
+   ============================================================================= */
+
+/* =============================================================================
+   ROOT VARIABLES & COLOR SYSTEM
+   ============================================================================= */
+
+:root {
+  --header-height: 32px;
+  --footer-height: 32px;
+  --content-width: 50rem;
+
+  /* HY Colors */
+  --hy-lightblue: #cfdeee;
+  --hy-lightblue-50: #eff7ff;
+  --hy-lightblue-border: #bbc9d7;
+  --hy-lightblue-border-50: #e2e7eb;
+
+  /* 🎼 Bach Color Palette - Easy to modify! */
+  --bach-cream: #faf8f3;
+  /* Primary background */
+  --bach-taupe: #d4c4a8;
+  /* Secondary/controls */
+  --bach-taupe-50: rgba(212, 196, 168, 0.5);
+  /* 50% opacity taupe */
+  --bach-brown: #8b6f47;
+  /* Active/selected */
+  --bach-mid: #775c41;
+  --bach-dark: #5a4037;
+  /* Text/borders */
+  --bach-gold: #c8a882;
+  /* Special accent */
+
+  /* 🎵 Voice Color System - Single Source of Truth */
+  --voice-0-color: coral;
+  --voice-0-color-dark: #c63500;
+  /* coral → orangered */
+  --voice-0-name: "SOPRANO";
+
+  --voice-1-color: lightgreen;
+  --voice-1-color-dark: darkgreen;
+  /* lightgreen → darkgreen */
+  --voice-1-name: "BASS";
+
+  --voice-2-color: dodgerblue;
+  --voice-2-color-dark: navy;
+  /* dodgerblue → navy */
+  --voice-2-name: "ALTO";
+
+  --voice-3-color: gold;
+  --voice-3-color-dark: #766300;
+  /* gold → saddlebrown */
+  --voice-3-name: "TENOR";
+
+  --voice-4-color: darkred;
+  --voice-4-color-dark: #500000;
+  /* darkred → very dark red */
+  --voice-4-name: "VOICE5";
+
+  --voice-5-color: orchid;
+  --voice-5-color-dark: indigo;
+  /* orchid → indigo */
+  --voice-5-name: "VOICE6";
+
+  --body-bgcolor: white;
+}
+
+/* =============================================================================
+   LAYOUT & STRUCTURE
+   ============================================================================= */
+
+/* html,
+body {
+  height: 100%;
+} */
+
+/* body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: white; */ */
+  /* padding-top: var(--header-height); */ */
+  /* Compensate for fixed header */
+/* } */
+
+.main-content {
+  flex: 1;
+}
+
+/* =============================================================================
+   SVG CONTAINER & NOTE ANIMATIONS
+   ============================================================================= */
+
+#svg-container {
+  display: grid;
+  place-items: start center;
+  scroll-margin-top: var(--header-height);
+}
+
+#svg-container>svg {
+  height: auto;
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Basic note appearance */
+#svg-container>svg path[data-ref] {
+  color: black;
+}
+
+#svg-container>svg a.notangka {
+  color: black;
+}
+
+/* Hide invisible paths */
+#svg-container>svg path[fill="none"][stroke="none"] {
+  display: none !important;
+}
+
+/* MOBILE: NO animations - instant color changes only */
+@media (max-width: 1024px),
+(hover: none),
+(pointer: coarse) {
+  #svg-container>svg path[data-ref] {
+    transition: none;
+  }
+
+  #svg-container>svg path[data-ref].active {
+    stroke-width: 0.125;
+    stroke-opacity: 0.667;
+  }
+
+  #svg-container>svg a.notangka {
+    transition: none;
+    text-decoration: none !important;
+  }
+
+  #svg-container>svg a.notangka.active {
+    stroke-width: 0.125;
+    stroke-opacity: 0.667;
+    text-decoration: inherit !important;
+  }
+}
+
+/* DESKTOP: Full animations with effects */
+@media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+  @keyframes noteFlash {
+    0% {
+      filter: brightness(5) saturate(0);
+    }
+
+    100% {
+      filter: brightness(1);
+    }
+  }
+
+  #svg-container>svg path[data-ref] {
+    transition: fill 1.5s ease, filter 1.5s ease, transform 1.5s ease,
+      stroke 1.5s ease, stroke-width 1.5s ease, stroke-opacity 1.5s ease;
+    transform: scale(1);
+    transform-box: fill-box;
+    transform-origin: center;
+    stroke-width: 0;
+    stroke-opacity: 0;
+  }
+
+  #svg-container>svg path[data-ref].active {
+    transition: fill 0.15s linear, filter 0.15s linear, transform 0.15s linear,
+      stroke 0.15s linear, stroke-width 0.15s linear,
+      stroke-opacity 0.15s linear;
+    transform: scale(1.125);
+    transform-box: fill-box;
+    transform-origin: center;
+    stroke-width: 0.125;
+    stroke-opacity: 0.667;
+    animation: noteFlash 0.2s ease-out;
+  }
+
+  #svg-container>svg a.notangka {
+    transition: fill 1.5s ease, filter 1.5s ease, transform 1.5s ease,
+      stroke 1.5s ease, stroke-width 1.5s ease, stroke-opacity 1.5s ease;
+    transform: scale(1);
+    transform-box: border-box;
+    transform-origin: center;
+    stroke-width: 0;
+    stroke-opacity: 0;
+    text-decoration: none !important;
+  }
+
+  #svg-container>svg a.notangka.active {
+    transition: fill 0.15s linear, filter 0.15s linear, transform 0.15s linear,
+      stroke 0.15s linear, stroke-width 0.15s linear,
+      stroke-opacity 0.15s linear;
+    transform: scale(1.125);
+    transform-box: border-box;
+    transform-origin: center;
+    stroke-width: 0.125;
+    stroke-opacity: 0.667;
+    animation: noteFlash 0.2s ease-out;
+    text-decoration: inherit !important;
+  }
+
+}
+
+/* Channel colors (applies to both mobile and desktop) */
+body.playing #svg-container>svg path[data-ref].active.channel-0 {
+  fill: var(--voice-0-color) !important;
+  stroke: var(--voice-0-color-dark) !important;
+}
+
+body.playing #svg-container>svg path[data-ref].active.channel-1 {
+  fill: var(--voice-1-color) !important;
+  stroke: var(--voice-1-color-dark) !important;
+}
+
+body.playing #svg-container>svg path[data-ref].active.channel-2 {
+  fill: var(--voice-2-color) !important;
+  stroke: var(--voice-2-color-dark) !important;
+}
+
+body.playing #svg-container>svg path[data-ref].active.channel-3 {
+  fill: var(--voice-3-color) !important;
+  stroke: var(--voice-3-color-dark) !important;
+}
+
+body.playing #svg-container>svg path[data-ref].active.channel-4 {
+  fill: var(--voice-4-color) !important;
+  stroke: var(--voice-4-color-dark) !important;
+}
+
+body.playing #svg-container>svg path[data-ref].active.channel-5 {
+  fill: var(--voice-5-color) !important;
+  stroke: var(--voice-5-color-dark) !important;
+}
+
+/* Channel colors for solmisasi */
+body.playing #svg-container>svg a.notangka.active.channel-0 {
+  fill: var(--voice-0-color) !important;
+  stroke: var(--voice-0-color-dark) !important;
+}
+
+body.playing #svg-container>svg a.notangka.active.channel-1 {
+  fill: var(--voice-1-color) !important;
+  stroke: var(--voice-1-color-dark) !important;
+}
+
+body.playing #svg-container>svg a.notangka.active.channel-2 {
+  fill: var(--voice-2-color) !important;
+  stroke: var(--voice-2-color-dark) !important;
+}
+
+body.playing #svg-container>svg a.notangka.active.channel-3 {
+  fill: var(--voice-3-color) !important;
+  stroke: var(--voice-3-color-dark) !important;
+}
+
+body.playing #svg-container>svg a.notangka.active.channel-4 {
+  fill: var(--voice-4-color) !important;
+  stroke: var(--voice-4-color-dark) !important;
+}
+
+body.playing #svg-container>svg a.notangka.active.channel-5 {
+  fill: var(--voice-5-color) !important;
+  stroke: var(--voice-5-color-dark) !important;
+}
+
+/* Solmisasi accidental lines */
+
+body.playing #svg-container>svg a.notangka.active.channel-0>line {
+  stroke: var(--voice-0-color-dark) !important;
+}
+
+body.playing #svg-container>svg a.notangka.active.channel-1>line {
+  stroke: var(--voice-1-color-dark) !important;
+}
+
+body.playing #svg-container>svg a.notangka.active.channel-2>line {
+  stroke: var(--voice-2-color-dark) !important;
+}
+
+body.playing #svg-container>svg a.notangka.active.channel-3>line {
+  stroke: var(--voice-3-color-dark) !important;
+}
+
+body.playing #svg-container>svg a.notangka.active.channel-4>line {
+  stroke: var(--voice-4-color-dark) !important;
+}
+
+body.playing #svg-container>svg a.notangka.active.channel-5>line {
+  stroke: var(--voice-5-color-dark) !important;
+}
+
+/* Accessibility: Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  #svg-container>svg path[data-ref] {
+    transition: none !important;
+  }
+
+  #svg-container>svg path[data-ref].active {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  #svg-container>svg a.notangka {
+    transition: none !important;
+  }
+
+  #svg-container>svg a.notangka.active {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* =============================================================================
+   BAR HIGHLIGHTING
+   ============================================================================= */
+
+body.playing:not(.seeking) #svg-container>svg rect[data-bar] {
+  fill: var(--hy-lightblue);
+  /* Override SVG's fill:none */
+  /* fill: none; */
+  fill-opacity: 0.15;
+  filter: none;
+}
+
+body:not(.playing) #svg-container>svg rect[data-bar] {
+  visibility: hidden;
+}
+
+body.seeking #svg-container>svg rect[data-bar] {
+  filter: blur(1rem) drop-shadow(0 0 0.2rem var(--bach-dark));
+}
+
+/* =============================================================================
+   UI CONTROLS & NAVIGATION
+   ============================================================================= */
+
+/* Hide scroll-to-top button when playing or already at optimal position */
+body.playing #button_scroll_to_top,
+body.svg-at-top #button_scroll_to_top {
+  visibility: hidden !important;
+}
+
+/* Bar spy (progress indicator) */
+#bar_spy {
+  background-color: rgb(242, 243, 244) !important;
+  height: 32px;
+  margin: 4px;
+  color: var(--bach-dark) !important;
+  font-weight: normal;
+  font-size: 0.8rem;
+  transition: filter 1s ease, width 1s ease;
+}
+
+/* #pdf_download {
+  height: auto;
+  margin: auto;
+  color: var(--bach-dark) !important;
+  font-weight: normal;
+  font-size: 0.8rem;
+  transition: filter 1s ease, width 1s ease;
+} */
+
+body.seeking #bar_spy {
+  filter: drop-shadow(0 0 0.2rem var(--bach-dark));
+  transition: filter 0.1s ease, width 0.1s ease;
+}
+
+body.seeking #bar_spy :first-child {
+  display: inline-block;
+  width: 24px;
+  text-align: right;
+}
+
+/* Header border styling */
+.sticky-top.border-bottom {
+  border-bottom-color: var(--bach-taupe-50) !important;
+}
+
+/* Footer */
+footer#footer {
+  z-index: 10;
+  /*
+  height: var(--footer-height) !important;
+  min-height: var(--footer-height) !important;
+  max-height: var(--footer-height) !important;
+  */
+  background-color: var(--hy-lightblue-50) !important;
+  border-top-color: var(--hy-lightblue-border) !important;
+  color: darkslategray;
+}
+
+#footer.d-flex.justify-content-between>div:nth-child(2) {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Measure highlighting controls */
+#measure-controls {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: var(--bach-cream);
+  border-radius: 5px;
+  border: 1px solid var(--bach-taupe);
+}
+
+#measure-controls label {
+  font-weight: 500;
+  margin-right: 10px;
+  color: var(--bach-dark);
+}
+
+#measure-controls select {
+  width: auto;
+  min-width: 120px;
+  display: inline-block;
+  margin-left: 8px;
+  background-color: var(--bach-cream);
+  border-color: var(--bach-taupe);
+  color: var(--bach-dark);
+}
+
+/* Hide dropdown arrow when disabled (single option) */
+#measure-controls select:disabled {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+  cursor: default;
+}
+
+/* Audio player */
+#audio {
+  border-radius: 15px;
+  color-scheme: light;
+}

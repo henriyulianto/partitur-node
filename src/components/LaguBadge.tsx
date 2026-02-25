@@ -1,4 +1,4 @@
-import type { TipeNotasi, JenisKarya } from "@/data/lagu";
+import type { TipeNotasi, JenisKarya } from "@/types/interfaces";
 
 const notasiColors: Record<TipeNotasi, string> = {
   "Not Angka": "bg-badge-not-angka text-badge-not-angka-fg",

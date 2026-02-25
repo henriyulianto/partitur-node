@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import DetailLagu from "./pages/DetailLagu";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
+import APIConfig from "./components/APIConfig";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ function AnimatedRoutes() {
         <Route path="/" element={<PageTransition><Index /></PageTransition>} />
         <Route path="/cari" element={<PageTransition><SearchResults /></PageTransition>} />
         <Route path="/:slug" element={<PageTransition><DetailLagu /></PageTransition>} />
+        <Route path="/admin/api-config" element={<PageTransition><APIConfig /></PageTransition>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>

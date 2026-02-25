@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import type { Lagu } from "@/data/lagu";
-import { formatCredits } from "@/data/lagu";
+import type { Lagu } from "@/types/interfaces";
+import { KoleksiLagu } from "@/models/KoleksiLagu";
 import { NotasiBadge, KaryaBadge } from "@/components/LaguBadge";
 import { ArrowRight, ExternalLink } from "lucide-react";
 
@@ -16,10 +16,10 @@ export default function LaguCard({ lagu }: { lagu: Lagu }) {
             {lagu.judul}
           </h3>
           <p className="mt-1.5 text-sm text-muted-foreground line-clamp-2">
-            {formatCredits(lagu)}
+            {KoleksiLagu.formatCredits(lagu)}
           </p>
           {lagu.externalUrl && (
-            <p className="mt-1.5 text-sm">
+            <div className="mt-1.5 text-sm">
               <a
                 href={lagu.externalUrl}
                 target="_blank"
@@ -30,7 +30,7 @@ export default function LaguCard({ lagu }: { lagu: Lagu }) {
                 <ExternalLink className="h-3.5 w-3.5" />
                 URL Eksternal
               </a>
-            </p>
+            </div>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
             <NotasiBadge tipe={lagu.tipeNotasi} />

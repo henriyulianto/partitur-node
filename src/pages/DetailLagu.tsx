@@ -1,12 +1,12 @@
 import { useParams, Navigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
-import { getLaguBySlug, formatCredits } from "@/data/lagu";
+import { koleksiLagu, KoleksiLagu } from "@/models/KoleksiLagu";
 import { NotasiBadge, KaryaBadge } from "@/components/LaguBadge";
 import { User, Music, Mic2, Piano, Users } from "lucide-react";
 
 const DetailLagu = () => {
   const { slug } = useParams<{ slug: string }>();
-  const lagu = slug ? getLaguBySlug(slug) : undefined;
+  const lagu = slug ? koleksiLagu.getLaguBySlug(slug) : undefined;
 
   if (!lagu) {
     return <Navigate to="/" replace />;
@@ -28,7 +28,7 @@ const DetailLagu = () => {
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
             {lagu.judul}
           </h1>
-          <p className="mt-2 text-muted-foreground">{formatCredits(lagu)}</p>
+          <p className="mt-2 text-muted-foreground">{KoleksiLagu.formatCredits(lagu)}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <NotasiBadge tipe={lagu.tipeNotasi} />
             <KaryaBadge jenis={lagu.jenisKarya} />
@@ -58,7 +58,7 @@ const DetailLagu = () => {
         </div>
 
         {/* Placeholder content area */}
-        <div className="rounded-lg border-2 border-dashed border-border p-12 flex items-center justify-center min-h-[400px]">
+        <div className="rounded-lg border-2 border-dashed border-border p-12 flex items-center justify-center min-h-100">
           <p className="text-muted-foreground text-center">
             Area konten partitur —{" "}
             <span className="font-medium text-foreground">{lagu.judul}</span>

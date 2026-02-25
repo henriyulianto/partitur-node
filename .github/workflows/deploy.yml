@@ -9,32 +9,30 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy to Cloudflare Pages
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: '18'
-          
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          
+          bun-version: latest
+
       - name: Install dependencies
-        run: pnpm install
-        
+        run: bun install
+
+      - name: Build project
+        run: bun run build
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: partitur-node
-          directory: .
-          
+          projectName: animasi-partitur
+          directory: dist
+
       - name: Output deployment URL
         run: |
           echo "🚀 Deployed to: ${{ steps.deploy.outputs.url }}"
