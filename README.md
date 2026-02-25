@@ -1,6 +1,6 @@
 # Animasi Partitur Musik
 
-Interactive music sheet player with React, TypeScript, and Cloudflare Pages deployment.
+Interactive music sheet player with React, TypeScript, and Cloudflare Pages deployment. 🎵
 
 ## Features
 
