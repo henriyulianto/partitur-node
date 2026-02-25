@@ -61,7 +61,7 @@ const Index = () => {
             Animasi Partitur Musik
           </h1>
           <p className="mt-2 text-muted-foreground text-lg">
-            Koleksi partitur musik dengan animasi interaktif.
+            Koleksi partitur musik dengan animasi notasi.
           </p>
         </div>
 

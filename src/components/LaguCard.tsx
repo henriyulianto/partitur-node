@@ -13,7 +13,7 @@ export default function LaguCard({ lagu }: { lagu: Lagu }) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <h3 className="font-display text-lg font-semibold group-hover:text-accent-foreground transition-colors">
-            {lagu.judul}
+            {lagu.judul} ({lagu.instrument})
           </h3>
           <p className="mt-1.5 text-sm text-muted-foreground line-clamp-2">
             {KoleksiLagu.formatCredits(lagu)}

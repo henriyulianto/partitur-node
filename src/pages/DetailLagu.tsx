@@ -1,4 +1,5 @@
 import { useParams, Navigate } from "react-router-dom";
+import { useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
 import { koleksiLagu, KoleksiLagu } from "@/models/KoleksiLagu";
 import { NotasiBadge, KaryaBadge } from "@/components/LaguBadge";
@@ -7,6 +8,11 @@ import { User, Music, Mic2, Piano, Users } from "lucide-react";
 const DetailLagu = () => {
   const { slug } = useParams<{ slug: string }>();
   const lagu = slug ? koleksiLagu.getLaguBySlug(slug) : undefined;
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (!lagu) {
     return <Navigate to="/" replace />;
@@ -26,7 +32,7 @@ const DetailLagu = () => {
         {/* Header lagu */}
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            {lagu.judul}
+            {lagu.judul} ({lagu.instrument})
           </h1>
           <p className="mt-2 text-muted-foreground">{KoleksiLagu.formatCredits(lagu)}</p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -36,7 +42,7 @@ const DetailLagu = () => {
         </div>
 
         {/* Metadata section */}
-        <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {metadataItems.map(({ icon: Icon, label, value }) => (
             <div
               key={label}
@@ -55,13 +61,13 @@ const DetailLagu = () => {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* Placeholder content area */}
         <div className="rounded-lg border-2 border-dashed border-border p-12 flex items-center justify-center min-h-100">
           <p className="text-muted-foreground text-center">
             Area konten partitur —{" "}
-            <span className="font-medium text-foreground">{lagu.judul}</span>
+            <span className="font-medium text-foreground">{lagu.judul} ({lagu.instrument})</span>
           </p>
         </div>
       </div>

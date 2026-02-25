@@ -421,11 +421,11 @@ export class KoleksiLagu {
     const compLyr = composer === lyricist;
     const arrLyr = arranger === lyricist;
 
-    if (allSame) return `Lagu, syair, dan aransemen: ${composer}`;
-    if (compArr) return `Lagu dan aransemen: ${composer} | Syair: ${lyricist}`;
-    if (compLyr) return `Lagu dan syair: ${composer} | Aransemen: ${arranger}`;
-    if (arrLyr) return `Lagu: ${composer} | Syair dan aransemen: ${arranger}`;
-    return `Lagu: ${composer} | Syair: ${lyricist} | Aransemen: ${arranger}`;
+    if (allSame) return `Lagu, syair, dan aransemen: ${composer.toUpperCase()}`;
+    if (compArr) return `Lagu dan aransemen: ${composer.toUpperCase()} | Syair: ${lyricist.toUpperCase()}`;
+    if (compLyr) return `Lagu dan syair: ${composer.toUpperCase()} | Aransemen: ${arranger.toUpperCase()}`;
+    if (arrLyr) return `Lagu: ${composer.toUpperCase()} | Syair dan aransemen: ${arranger.toUpperCase()}`;
+    return `Lagu: ${composer.toUpperCase()} | Syair: ${lyricist.toUpperCase()} | Aransemen: ${arranger.toUpperCase()}`;
   }
 }
 

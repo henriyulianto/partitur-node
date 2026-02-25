@@ -71,26 +71,6 @@ export async function onRequest(context) {
         const configContent = await configResponse.text();
         const config = yaml.load(configContent);
 
-        // Normalize notation type
-        const normalizeNotationType = (type) => {
-          const typeMap = {
-            'not angka': 'Not Angka',
-            'not balok': 'Not Balok',
-            'not kombinasi': 'Not Kombinasi'
-          };
-          return typeMap[type.toLowerCase()] || 'Not Angka';
-        };
-
-        // Normalize work type
-        const normalizeWorkType = (type) => {
-          const typeMap = {
-            'komposisi': 'Komposisi',
-            'aransemen': 'Aransemen',
-            'salinan': 'Salinan'
-          };
-          return typeMap[type.toLowerCase()] || 'Komposisi';
-        };
-
         // Construct song object
         const song = {
           slug: dir.name,
