@@ -1,30 +1,30 @@
 # Animasi Partitur Musik
 
-Interactive music sheet player with React, TypeScript, and Cloudflare Pages deployment. 🎵
+Pemutar lembaran musik interaktif dengan React, TypeScript, dan deployment Cloudflare Pages. 🎵
 
-## Features
+## Fitur
 
-- 🎵 **Interactive Music Player** - Play and control music playback
-- 📝 **Digital Sheet Music** - Display music notation and lyrics
-- 📱 **Responsive Design** - Works seamlessly on mobile and desktop
-- 🚀 **Fast Performance** - React with Vite for optimal speed
-- 🎨 **Modern UI** - Tailwind CSS with shadcn/ui components
-- 🌐 **Edge Deployment** - Cloudflare Pages with global CDN
-- � **API Integration** - GitHub API for song data with Workers caching
-- 🔧 **TypeScript** - Full type safety and better development experience
+- 🎵 **Pemutar Musik Interaktif** - Putar dan kontrol pemutaran musik
+- 📝 **Lembaran Musik Digital** - Tampilkan notasi musik dan lirik
+- 📱 **Desain Responsif** - Bekerja sempurna di mobile dan desktop
+- 🚀 **Performa Cepat** - React dengan Vite untuk kecepatan optimal
+- 🎨 **UI Modern** - Tailwind CSS dengan komponen shadcn/ui
+- 🌐 **Deployment Edge** - Cloudflare Pages dengan CDN global
+- 📊 **Integrasi API** - API GitHub untuk data lagu dengan cache Workers
+- 🔧 **TypeScript** - Keamanan tipe penuh dan pengalaman pengembangan yang lebih baik
 
-## Tech Stack
+## Teknologi
 
 - **Frontend**: React 18 + TypeScript + Vite
 - **UI Framework**: Tailwind CSS + shadcn/ui + Radix UI
-- **Routing**: React Router v6 with Framer Motion animations
-- **State Management**: TanStack Query for data fetching
+- **Routing**: React Router v6 dengan animasi Framer Motion
+- **State Management**: TanStack Query untuk pengambilan data
 - **Backend**: Cloudflare Pages Functions (Workers)
-- **Data Source**: GitHub API with YAML configuration files
-- **Deployment**: Cloudflare Pages with edge caching
+- **Sumber Data**: API GitHub dengan file konfigurasi YAML
+- **Deployment**: Cloudflare Pages dengan cache edge
 - **Package Manager**: Bun
 
-## Development
+## Pengembangan
 
 ```bash
 # Install dependencies
@@ -36,115 +36,115 @@ bun run dev
 # Build for production
 bun run build
 
-# Deploy to Cloudflare Pages
+# Deploy ke Cloudflare Pages
 bun run deploy
 ```
 
-## Environment Variables
+## Variabel Lingkungan
 
-Create a `.env.local` file for local development:
+Buat file `.env.local` untuk pengembangan lokal:
 
 ```env
 GITHUB_OWNER=henriyulianto
 GITHUB_REPO=partitur-data
-GITHUB_TOKEN=your_github_token_here
+GITHUB_TOKEN=token_github_anda_di_sini
 ```
 
-## Project Structure
+## Struktur Proyek
 
 ```
 partitur-node/
 ├── src/
-│   ├── components/          # React components
-│   │   ├── ui/              # shadcn/ui components
-│   │   ├── LaguCard.tsx     # Song card component
-│   │   ├── LaguBadge.tsx    # Song type badges
-│   │   └── APIConfig.tsx    # API configuration UI
-│   ├── lib/                 # Utility functions
-│   │   └── utils.ts         # Shared utilities
-│   ├── models/              # Data models
-│   │   └── KoleksiLagu.ts   # Song collection manager
-│   ├── pages/               # Page components
-│   │   ├── Index.tsx        # Homepage
-│   │   ├── DetailLagu.tsx   # Song detail page
-│   │   └── SearchResults.tsx # Search results
-│   ├── types/               # TypeScript types
-│   │   └── interfaces.ts    # Type definitions
-│   └── App.tsx              # Main app component
+│   ├── components/          # Komponen React
+│   │   ├── ui/              # Komponen shadcn/ui
+│   │   ├── LaguCard.tsx     # Komponen kartu lagu
+│   │   ├── LaguBadge.tsx    # Badge tipe lagu
+│   │   └── APIConfig.tsx    # UI konfigurasi API
+│   ├── lib/                 # Fungsi utilitas
+│   │   └── utils.ts         # Utilitas bersama
+│   ├── models/              # Model data
+│   │   └── KoleksiLagu.ts   # Manajer koleksi lagu
+│   ├── pages/               # Komponen halaman
+│   │   ├── Index.tsx        # Halaman beranda
+│   │   ├── DetailLagu.tsx   # Halaman detail lagu
+│   │   └── SearchResults.tsx # Hasil pencarian
+│   ├── types/               # Tipe TypeScript
+│   │   └── interfaces.ts    # Definisi tipe
+│   └── App.tsx              # Komponen app utama
 ├── functions/               # Cloudflare Pages Functions
 │   └── api/
-│       └── songs.js         # Songs API endpoint
-├── dist/                    # Build output
+│       └── songs.js         # Endpoint API lagu
+├── dist/                    # Output build
 ├── package.json
 ├── vite.config.ts
-├── wrangler.jsonc          # Cloudflare configuration
+├── wrangler.jsonc          # Konfigurasi Cloudflare
 └── README.md
 ```
 
-## API Architecture
+## Arsitektur API
 
-### Data Flow
-1. **Frontend** requests song data from `/api/songs`
-2. **Cloudflare Pages Function** fetches from GitHub API
-3. **GitHub API** returns repository contents
-4. **Function** processes YAML files and normalizes data
-5. **Cached response** served with 5-minute edge cache
+### Alur Data
+1. **Frontend** meminta data lagu dari `/api/songs`
+2. **Cloudflare Pages Function** mengambil dari API GitHub
+3. **API GitHub** mengembalikan konten repositori
+4. **Function** memproses file YAML dan menormalisasi data
+5. **Respon di-cache** disajikan dengan cache edge 5 menit
 
-### Rate Limits
-- **Without Token**: 60 requests/hour (GitHub API)
-- **With Token**: 5,000 requests/hour (GitHub API)
-- **With Workers**: Unlimited (edge cached)
+### Batas Rate
+- **Tanpa Token**: 60 permintaan/jam (API GitHub)
+- **Dengan Token**: 5.000 permintaan/jam (API GitHub)
+- **Dengan Workers**: Tidak terbatas (cache edge)
 
 ## Deployment
 
-### Cloudflare Pages (Recommended)
+### Cloudflare Pages (Direkomendasikan)
 
-1. **Connect Repository**: Link GitHub repository to Cloudflare Pages
-2. **Build Settings**:
+1. **Hubungkan Repositori**: Hubungkan repositori GitHub ke Cloudflare Pages
+2. **Pengaturan Build**:
    - Build command: `bun run build`
    - Build output directory: `dist`
    - Root directory: `/`
-3. **Environment Variables**: Set GitHub credentials in Pages dashboard
-4. **Functions**: Automatically deployed from `functions/` directory
+3. **Variabel Lingkungan**: Atur kredensial GitHub di dashboard Pages
+4. **Functions**: Otomatis di-deploy dari direktori `functions/`
 
-### Manual Deployment
+### Deployment Manual
 
 ```bash
-# Build and deploy
+# Build dan deploy
 bun run build
 wrangler pages deploy dist --project-name=animasi-partitur
 ```
 
-## Configuration
+## Konfigurasi
 
-### GitHub API Integration
-- Repository: `henriyulianto/partitur-data`
-- Song data stored as YAML files in `exports/` directories
-- Automatic normalization of notation and work types
-- Fallback data for error handling
+### Integrasi API GitHub
+- Repositori: `henriyulianto/partitur-data`
+- Data lagu disimpan sebagai file YAML di direktori `exports/`
+- Normalisasi otomatis tipe notasi dan jenis karya
+- Data fallback untuk penanganan error
 
-### Workers API
+### API Workers
 - Endpoint: `/api/songs`
-- Cache duration: 5 minutes
-- CORS enabled for frontend
-- Error handling with proper HTTP status codes
+- Durasi cache: 5 menit
+- CORS diaktifkan untuk frontend
+- Penanganan error dengan kode status HTTP yang tepat
 
-## Performance Optimizations
+## Optimasi Performa
 
-- **Edge Caching**: 5-minute cache for API responses
-- **Code Splitting**: Automatic vendor chunks
-- **Image Optimization**: Lazy loading with proper sizing
-- **Font Loading**: Google Fonts with preload
-- **Bundle Analysis**: Optimized with Vite
+- **Edge Caching**: Cache 5 menit untuk respons API
+- **Code Splitting**: Chunk vendor otomatis
+- **Optimasi Gambar**: Lazy loading dengan ukuran yang tepat
+- **Font Loading**: Google Fonts dengan preload
+- **Bundle Analysis**: Dioptimasi dengan Vite
 
-## Contributing
+## Kontribusi
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+1. Fork repositori
+2. Buat cabang fitur
+3. Lakukan perubahan Anda
+4. Uji secara menyeluruh
+5. Kirim pull request
 
-## License
+## Lisensi
 
-This project is licensed under the MIT License.
+Proyek ini dilisensikan di bawah MIT License.
