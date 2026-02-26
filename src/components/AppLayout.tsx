@@ -90,7 +90,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                     onClick={() => setBreadcrumbDropdownOpen(!breadcrumbDropdownOpen)}
                     className="flex items-center gap-1 text-foreground font-medium hover:text-accent transition-colors"
                   >
-                    {currentLagu.judul}
+                    {currentLagu.workInfo.title} ({currentLagu.workInfo.instrument})
                     <ChevronDown className={cn("h-3 w-3 transition-transform", breadcrumbDropdownOpen && "rotate-180")} />
                   </button>
 
@@ -111,7 +111,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                               : "text-popover-foreground hover:bg-muted"
                           )}
                         >
-                          {lagu.judul}
+                          {lagu.workInfo.title} ({lagu.workInfo.instrument})
                         </Link>
                       ))}
                     </div>
@@ -163,7 +163,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                           : "text-sidebar-foreground hover:bg-muted"
                       )}
                     >
-                      {lagu.judul}
+                      {lagu.workInfo.title} ({lagu.workInfo.instrument})
                     </Link>
                   </li>
                 );
@@ -182,44 +182,62 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
         {/* Main content */}
         <main className="flex-1 min-w-0 flex justify-center">
-          <div className="w-full max-w-5xl">{children}</div>
+          <div className="w-full max-w-6xl">{children}</div>
         </main>
       </div>
 
       {/* Footer */}
       <footer className="border-t bg-muted/30">
         <div className="px-6 md:px-8 py-8">
-          <div className="max-w-4xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Music className="h-4 w-4 text-accent" />
                 <span className="font-display font-semibold">Animasi Partitur Musik</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Koleksi partitur musik digital dengan animasi interaktif.
+                Koleksi partitur musik dengan animasi notasi.
               </p>
             </div>
 
-            <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm md:ml-auto">
-              <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-                Beranda
-              </Link>
-              <Link to="/admin/api-config" className="text-muted-foreground hover:text-foreground transition-colors">
-                API Config
-              </Link>
-              {daftarLagu.slice(0, 3).map((lagu) => (
+            <div className="relative">
+              <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm md:ml-auto">
+                <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Beranda
+                </Link>
                 <Link
-                  key={lagu.slug}
-                  to={`/${lagu.slug}`}
+                  to="https://github.com/henriyulianto/partitur-node"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {lagu.judul}
+                  Repositori Source Code
                 </Link>
-              ))}
-            </nav>
+                <Link
+                  to="https://github.com/henriyulianto/partitur-data"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Repositori Data Partitur
+                </Link>
+                {/* <Link to="/admin/api-config" className="text-muted-foreground hover:text-foreground transition-colors">
+                API Config
+              </Link> */}
+                {/* {daftarLagu.slice(0, 3).map((lagu) => (
+                  <Link
+                    key={lagu.slug}
+                    to={`/${lagu.slug}`}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {lagu.workInfo.title} ({lagu.workInfo.instrument})
+                  </Link>
+                ))} */}
+              </nav>
+            </div>
           </div>
 
-          <div className="max-w-4xl mt-6 pt-4 border-t border-border/60">
+          <div className="mt-6 pt-4 border-t border-border/60 flex justify-center">
             <p className="text-xs text-muted-foreground">
               &copy; {new Date().getFullYear()} Animasi Partitur Musik. Hak cipta dilindungi undang-undang.
             </p>

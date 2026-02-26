@@ -1,6 +1,6 @@
 # Animasi Partitur Musik
 
-Pemutar lembaran musik interaktif dengan React, TypeScript, dan deployment Cloudflare Pages. 🎵
+Aplikasi web penampil partitur dengan animasi notasi, yang dikembangkan dengan React, TypeScript, dan di-deploy terutama ke Cloudflare Pages. 🎵
 
 ## Fitur
 

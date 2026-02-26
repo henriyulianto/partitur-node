@@ -1,6 +1,6 @@
 /**
  * synchronisator.mjs - Unified Timing and Synchronization Module
- * 
+ *
  * Handles all music playback synchronization using the unified YAML format
  * from generate_sync.py. Eliminates the need for complex LilyPond timing
  * calibration by using pre-processed tick/bar data.
@@ -79,7 +79,8 @@ export class Synchronisator {
     this.buildElementCaches();
     this.processNotes();
     this.buildBarTimingsCache();
-    this.setupChannelColorMapping();
+    // this.setupChannelColorMapping();
+    this.fallbackChannelMapping();
     // console.log(`🎼 Synchronisator initialized: ${this.notes.length} notes, ${this.barElementsCache.size} bars`);
   }
 
@@ -96,7 +97,7 @@ export class Synchronisator {
       this.barCache[barNumber].elements.push(element);
     });
 
-    // Cache note elements  
+    // Cache note elements
     const noteElements = this.svg.querySelectorAll('[data-ref]');
     // console.log(`🔍 Found ${noteElements.length} note elements with data-ref`);
 
@@ -129,20 +130,20 @@ export class Synchronisator {
         startTime: this.tickToSeconds(tick)
       }))
       .sort((a, b) => a.startTime - b.startTime);
-    
+
     // Populate barCache with timing data and track first bar
     barTimings.forEach(({ barNumber, startTime }) => {
       if (this.firstBarNumber === null || barNumber < this.firstBarNumber) {
         this.firstBarNumber = barNumber;
       }
-      
+
       if (!this.barCache[barNumber]) {
         this.barCache[barNumber] = { elements: [], startTime };
       } else {
         this.barCache[barNumber].startTime = startTime;
       }
     });
-    
+
     // Cache start times array for efficient binary search
     this.barStartTimesCache = barTimings.map(bar => bar.startTime);
     this.barNumbersCache = barTimings.map(bar => bar.barNumber);
@@ -163,7 +164,7 @@ export class Synchronisator {
           startTick,
           endTick,
           hrefs: Array.isArray(hrefs) ? hrefs : [hrefs],
-          channel: channel || 0, 
+          channel: channel || 0,
           startTime,
           endTime,
           elements: this.getElementsForHrefs(hrefs)
@@ -309,7 +310,7 @@ export class Synchronisator {
     // Use binary search - if no bars or before first bar, return -1
     const index = sortedIndex(this.barStartTimesCache, currentTime);
     const timingIndex = index - 1;
-    
+
     return timingIndex >= 0 ? this.barNumbersCache[timingIndex] : -1;
   }
 

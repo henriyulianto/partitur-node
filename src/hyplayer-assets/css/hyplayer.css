@@ -3,10 +3,10 @@
    ============================================================================= */
 
 /* =============================================================================
-   ROOT VARIABLES & COLOR SYSTEM
+   ROOT VARIABLES & COLOR SYSTEM (Scoped to hyplayer)
    ============================================================================= */
 
-:root {
+.hyplayer-root {
   --header-height: 32px;
   --footer-height: 32px;
   --content-width: 50rem;
@@ -39,12 +39,12 @@
   --voice-0-name: "SOPRANO";
 
   --voice-1-color: lightgreen;
-  --voice-1-color-dark: darkgreen;
+  --voice-1-color-dark: #006400;
   /* lightgreen → darkgreen */
   --voice-1-name: "BASS";
 
   --voice-2-color: dodgerblue;
-  --voice-2-color-dark: navy;
+  --voice-2-color-dark: #000080;
   /* dodgerblue → navy */
   --voice-2-name: "ALTO";
 
@@ -59,7 +59,7 @@
   --voice-4-name: "VOICE5";
 
   --voice-5-color: orchid;
-  --voice-5-color-dark: indigo;
+  --voice-5-color-dark: #4b0082;
   /* orchid → indigo */
   --voice-5-name: "VOICE6";
 
@@ -70,21 +70,7 @@
    LAYOUT & STRUCTURE
    ============================================================================= */
 
-/* html,
-body {
-  height: 100%;
-} */
-
-/* body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: white; */ */
-  /* padding-top: var(--header-height); */ */
-  /* Compensate for fixed header */
-/* } */
-
-.main-content {
+.hyplayer-root .main-content {
   flex: 1;
 }
 
@@ -92,29 +78,29 @@ body {
    SVG CONTAINER & NOTE ANIMATIONS
    ============================================================================= */
 
-#svg-container {
+.hyplayer-root #svg-container {
   display: grid;
   place-items: start center;
   scroll-margin-top: var(--header-height);
 }
 
-#svg-container>svg {
+.hyplayer-root #svg-container>svg {
   height: auto;
   max-width: 100%;
   width: 100%;
 }
 
 /* Basic note appearance */
-#svg-container>svg path[data-ref] {
+.hyplayer-root #svg-container>svg path[data-ref] {
   color: black;
 }
 
-#svg-container>svg a.notangka {
+.hyplayer-root #svg-container>svg a.notangka {
   color: black;
 }
 
 /* Hide invisible paths */
-#svg-container>svg path[fill="none"][stroke="none"] {
+.hyplayer-root #svg-container>svg path[fill="none"][stroke="none"] {
   display: none !important;
 }
 
@@ -122,21 +108,21 @@ body {
 @media (max-width: 1024px),
 (hover: none),
 (pointer: coarse) {
-  #svg-container>svg path[data-ref] {
+  .hyplayer-root #svg-container>svg path[data-ref] {
     transition: none;
   }
 
-  #svg-container>svg path[data-ref].active {
+  .hyplayer-root #svg-container>svg path[data-ref].active {
     stroke-width: 0.125;
     stroke-opacity: 0.667;
   }
 
-  #svg-container>svg a.notangka {
+  .hyplayer-root #svg-container>svg a.notangka {
     transition: none;
     text-decoration: none !important;
   }
 
-  #svg-container>svg a.notangka.active {
+  .hyplayer-root #svg-container>svg a.notangka.active {
     stroke-width: 0.125;
     stroke-opacity: 0.667;
     text-decoration: inherit !important;
@@ -155,7 +141,7 @@ body {
     }
   }
 
-  #svg-container>svg path[data-ref] {
+  .hyplayer-root #svg-container>svg path[data-ref] {
     transition: fill 1.5s ease, filter 1.5s ease, transform 1.5s ease,
       stroke 1.5s ease, stroke-width 1.5s ease, stroke-opacity 1.5s ease;
     transform: scale(1);
@@ -165,7 +151,7 @@ body {
     stroke-opacity: 0;
   }
 
-  #svg-container>svg path[data-ref].active {
+  .hyplayer-root #svg-container>svg path[data-ref].active {
     transition: fill 0.15s linear, filter 0.15s linear, transform 0.15s linear,
       stroke 0.15s linear, stroke-width 0.15s linear,
       stroke-opacity 0.15s linear;
@@ -177,7 +163,7 @@ body {
     animation: noteFlash 0.2s ease-out;
   }
 
-  #svg-container>svg a.notangka {
+  .hyplayer-root #svg-container>svg a.notangka {
     transition: fill 1.5s ease, filter 1.5s ease, transform 1.5s ease,
       stroke 1.5s ease, stroke-width 1.5s ease, stroke-opacity 1.5s ease;
     transform: scale(1);
@@ -188,7 +174,7 @@ body {
     text-decoration: none !important;
   }
 
-  #svg-container>svg a.notangka.active {
+  .hyplayer-root #svg-container>svg a.notangka.active {
     transition: fill 0.15s linear, filter 0.15s linear, transform 0.15s linear,
       stroke 0.15s linear, stroke-width 0.15s linear,
       stroke-opacity 0.15s linear;
@@ -204,110 +190,110 @@ body {
 }
 
 /* Channel colors (applies to both mobile and desktop) */
-body.playing #svg-container>svg path[data-ref].active.channel-0 {
+body.playing .hyplayer-root #svg-container>svg path[data-ref].active.channel-0 {
   fill: var(--voice-0-color) !important;
   stroke: var(--voice-0-color-dark) !important;
 }
 
-body.playing #svg-container>svg path[data-ref].active.channel-1 {
+body.playing .hyplayer-root #svg-container>svg path[data-ref].active.channel-1 {
   fill: var(--voice-1-color) !important;
   stroke: var(--voice-1-color-dark) !important;
 }
 
-body.playing #svg-container>svg path[data-ref].active.channel-2 {
+body.playing .hyplayer-root #svg-container>svg path[data-ref].active.channel-2 {
   fill: var(--voice-2-color) !important;
   stroke: var(--voice-2-color-dark) !important;
 }
 
-body.playing #svg-container>svg path[data-ref].active.channel-3 {
+body.playing .hyplayer-root #svg-container>svg path[data-ref].active.channel-3 {
   fill: var(--voice-3-color) !important;
   stroke: var(--voice-3-color-dark) !important;
 }
 
-body.playing #svg-container>svg path[data-ref].active.channel-4 {
+body.playing .hyplayer-root #svg-container>svg path[data-ref].active.channel-4 {
   fill: var(--voice-4-color) !important;
   stroke: var(--voice-4-color-dark) !important;
 }
 
-body.playing #svg-container>svg path[data-ref].active.channel-5 {
+body.playing .hyplayer-root #svg-container>svg path[data-ref].active.channel-5 {
   fill: var(--voice-5-color) !important;
   stroke: var(--voice-5-color-dark) !important;
 }
 
 /* Channel colors for solmisasi */
-body.playing #svg-container>svg a.notangka.active.channel-0 {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-0 {
   fill: var(--voice-0-color) !important;
   stroke: var(--voice-0-color-dark) !important;
 }
 
-body.playing #svg-container>svg a.notangka.active.channel-1 {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-1 {
   fill: var(--voice-1-color) !important;
   stroke: var(--voice-1-color-dark) !important;
 }
 
-body.playing #svg-container>svg a.notangka.active.channel-2 {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-2 {
   fill: var(--voice-2-color) !important;
   stroke: var(--voice-2-color-dark) !important;
 }
 
-body.playing #svg-container>svg a.notangka.active.channel-3 {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-3 {
   fill: var(--voice-3-color) !important;
   stroke: var(--voice-3-color-dark) !important;
 }
 
-body.playing #svg-container>svg a.notangka.active.channel-4 {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-4 {
   fill: var(--voice-4-color) !important;
   stroke: var(--voice-4-color-dark) !important;
 }
 
-body.playing #svg-container>svg a.notangka.active.channel-5 {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-5 {
   fill: var(--voice-5-color) !important;
   stroke: var(--voice-5-color-dark) !important;
 }
 
 /* Solmisasi accidental lines */
 
-body.playing #svg-container>svg a.notangka.active.channel-0>line {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-0>line {
   stroke: var(--voice-0-color-dark) !important;
 }
 
-body.playing #svg-container>svg a.notangka.active.channel-1>line {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-1>line {
   stroke: var(--voice-1-color-dark) !important;
 }
 
-body.playing #svg-container>svg a.notangka.active.channel-2>line {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-2>line {
   stroke: var(--voice-2-color-dark) !important;
 }
 
-body.playing #svg-container>svg a.notangka.active.channel-3>line {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-3>line {
   stroke: var(--voice-3-color-dark) !important;
 }
 
-body.playing #svg-container>svg a.notangka.active.channel-4>line {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-4>line {
   stroke: var(--voice-4-color-dark) !important;
 }
 
-body.playing #svg-container>svg a.notangka.active.channel-5>line {
+body.playing .hyplayer-root #svg-container>svg a.notangka.active.channel-5>line {
   stroke: var(--voice-5-color-dark) !important;
 }
 
 /* Accessibility: Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-  #svg-container>svg path[data-ref] {
+  .hyplayer-root #svg-container>svg path[data-ref] {
     transition: none !important;
   }
 
-  #svg-container>svg path[data-ref].active {
+  .hyplayer-root #svg-container>svg path[data-ref].active {
     animation: none !important;
     transform: none !important;
     filter: none !important;
   }
 
-  #svg-container>svg a.notangka {
+  .hyplayer-root #svg-container>svg a.notangka {
     transition: none !important;
   }
 
-  #svg-container>svg a.notangka.active {
+  .hyplayer-root #svg-container>svg a.notangka.active {
     animation: none !important;
     transform: none !important;
     filter: none !important;
@@ -318,7 +304,7 @@ body.playing #svg-container>svg a.notangka.active.channel-5>line {
    BAR HIGHLIGHTING
    ============================================================================= */
 
-body.playing:not(.seeking) #svg-container>svg rect[data-bar] {
+body.playing:not(.seeking) .hyplayer-root #svg-container>svg rect[data-bar] {
   fill: var(--hy-lightblue);
   /* Override SVG's fill:none */
   /* fill: none; */
@@ -326,11 +312,11 @@ body.playing:not(.seeking) #svg-container>svg rect[data-bar] {
   filter: none;
 }
 
-body:not(.playing) #svg-container>svg rect[data-bar] {
+body:not(.playing) .hyplayer-root #svg-container>svg rect[data-bar] {
   visibility: hidden;
 }
 
-body.seeking #svg-container>svg rect[data-bar] {
+body.seeking .hyplayer-root #svg-container>svg rect[data-bar] {
   filter: blur(1rem) drop-shadow(0 0 0.2rem var(--bach-dark));
 }
 
@@ -339,13 +325,13 @@ body.seeking #svg-container>svg rect[data-bar] {
    ============================================================================= */
 
 /* Hide scroll-to-top button when playing or already at optimal position */
-body.playing #button_scroll_to_top,
-body.svg-at-top #button_scroll_to_top {
+body.playing .hyplayer-root #button_scroll_to_top,
+body.svg-at-top .hyplayer-root #button_scroll_to_top {
   visibility: hidden !important;
 }
 
 /* Bar spy (progress indicator) */
-#bar_spy {
+.hyplayer-root #bar_spy {
   background-color: rgb(242, 243, 244) !important;
   height: 32px;
   margin: 4px;
@@ -364,24 +350,36 @@ body.svg-at-top #button_scroll_to_top {
   transition: filter 1s ease, width 1s ease;
 } */
 
-body.seeking #bar_spy {
+body.seeking .hyplayer-root #bar_spy {
   filter: drop-shadow(0 0 0.2rem var(--bach-dark));
   transition: filter 0.1s ease, width 0.1s ease;
 }
 
-body.seeking #bar_spy :first-child {
+body.seeking .hyplayer-root #bar_spy :first-child {
   display: inline-block;
   width: 24px;
   text-align: right;
 }
 
+/* Center-align all spans in bar_spy */
+.hyplayer-root #bar_spy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.hyplayer-root #bar_spy span {
+  text-align: center;
+}
+
 /* Header border styling */
-.sticky-top.border-bottom {
+.hyplayer-root .sticky.border-b {
   border-bottom-color: var(--bach-taupe-50) !important;
 }
 
 /* Footer */
-footer#footer {
+.hyplayer-root footer#footer {
   z-index: 10;
   /*
   height: var(--footer-height) !important;
@@ -393,14 +391,14 @@ footer#footer {
   color: darkslategray;
 }
 
-#footer.d-flex.justify-content-between>div:nth-child(2) {
+.hyplayer-root #footer.d-flex.justify-content-between>div:nth-child(2) {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
 
 /* Measure highlighting controls */
-#measure-controls {
+.hyplayer-root #measure-controls {
   margin: 10px 0;
   padding: 10px;
   background-color: var(--bach-cream);
@@ -408,13 +406,13 @@ footer#footer {
   border: 1px solid var(--bach-taupe);
 }
 
-#measure-controls label {
+.hyplayer-root #measure-controls label {
   font-weight: 500;
   margin-right: 10px;
   color: var(--bach-dark);
 }
 
-#measure-controls select {
+.hyplayer-root #measure-controls select {
   width: auto;
   min-width: 120px;
   display: inline-block;
@@ -425,7 +423,7 @@ footer#footer {
 }
 
 /* Hide dropdown arrow when disabled (single option) */
-#measure-controls select:disabled {
+.hyplayer-root #measure-controls select:disabled {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -434,7 +432,7 @@ footer#footer {
 }
 
 /* Audio player */
-#audio {
+.hyplayer-root audio {
   border-radius: 15px;
   color-scheme: light;
 }

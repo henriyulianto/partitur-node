@@ -32,20 +32,25 @@ const Index = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>("default");
   const [filterOpen, setFilterOpen] = useState(true);
   const [daftarLagu, setDaftarLagu] = useState<Lagu[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load songs data
   useEffect(() => {
-    koleksiLagu.getDaftarLagu().then(setDaftarLagu);
+    koleksiLagu.getDaftarLagu()
+      .then(setDaftarLagu)
+      .finally(() => setIsLoading(false));
   }, []);
 
   const filtered = useMemo(() => {
     let result = daftarLagu.filter((l) => {
-      if (activeNotasi && l.tipeNotasi !== activeNotasi) return false;
-      if (activeKarya && l.jenisKarya !== activeKarya) return false;
+      if (activeNotasi && l.workInfo.notationType !== activeNotasi) return false;
+      if (activeKarya && l.workInfo.workType !== activeKarya) return false;
       return true;
     });
-    if (sortOrder === "asc") result = [...result].sort((a, b) => a.judul.localeCompare(b.judul));
-    if (sortOrder === "desc") result = [...result].sort((a, b) => b.judul.localeCompare(a.judul));
+    if (sortOrder === "asc")
+      result = [...result].sort((a, b) => a.workInfo.title.localeCompare(b.workInfo.title));
+    if (sortOrder === "desc")
+      result = [...result].sort((a, b) => b.workInfo.title.localeCompare(a.workInfo.title));
     return result;
   }, [daftarLagu, activeNotasi, activeKarya, sortOrder]);
 
@@ -55,7 +60,7 @@ const Index = () => {
 
   return (
     <AppLayout>
-      <div className="p-6 md:p-8 max-w-4xl">
+      <div className="p-6 md:p-8 max-w-6xl">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
             Animasi Partitur Musik
@@ -136,7 +141,15 @@ const Index = () => {
         {/* Song list */}
         <div className="grid gap-4">
           <AnimatePresence mode="popLayout">
-            {filtered.length > 0 ? (
+            {isLoading ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="rounded-lg border border-dashed p-12 text-center text-muted-foreground"
+              >
+                Mengambil data lagu dari repositori partitur-data...
+              </motion.div>
+            ) : filtered.length > 0 ? (
               filtered.map((lagu, i) => (
                 <motion.div
                   key={lagu.slug}
@@ -154,7 +167,7 @@ const Index = () => {
                 animate={{ opacity: 1 }}
                 className="rounded-lg border border-dashed p-12 text-center text-muted-foreground"
               >
-                Tidak ada lagu yang cocok dengan filter.
+                {hasFilter ? "Tidak ada lagu yang cocok dengan filter." : "Daftar lagu kosong atau ada masalah."}
               </motion.div>
             )}
           </AnimatePresence>

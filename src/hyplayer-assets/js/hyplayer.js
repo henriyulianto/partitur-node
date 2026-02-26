@@ -2,6 +2,8 @@
 import { Synchronisator } from './synchronisator.mjs';
 // Import intelligent channel to color mapping (reads from CSS)
 import { createChannelColorMapping, logChannelMapping } from './channel2colour.js';
+// Import YAML parser
+import * as jsyaml from 'js-yaml';
 
 // Import BWV navigation menu system
 // import { initializeBWVNavigation, adjustBWVButtonLayout } from './menu.js';
@@ -17,7 +19,8 @@ import MusicalHighlighter, { quickHighlight, FuguePresets } from './musical-high
 function processWerkParameter() {
   // const urlParams = new URLSearchParams(window.location.search);
   // const werkParam = urlParams.get('lagu');
-  const werkParam = window.moduleConfig.lagu;
+  const werkParam = new URL(window.location.href).pathname.split('/').pop()
+    || CONFIG.workInfo.workId;
   const defaultWorkId = 'test';
 
   if (!werkParam) {
@@ -207,15 +210,39 @@ function updateMeasureControlsVisibility() {
 let CONFIG = null;
 let ROOT_LAGU = "/partitur/lagu";
 
+function getRawGithubFileUrl(title, filename) {
+  const OWNER = 'henriyulianto';
+  const REPONAME = 'partitur-data';
+  return `https://raw.githubusercontent.com/${OWNER}/${REPONAME}/main/${title}/exports/${filename}`;
+}
+
+async function audioExists(url) {
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Range: "bytes=0-0"
+      }
+    });
+
+    // 206 = Partial Content (ideal case)
+    // 200 = Range not honored but file exists
+    return response.status === 206 || response.status === 200;
+
+  } catch (err) {
+    return false;
+  }
+}
+
 // Audio file existence check with loading overlay
 async function checkAudioFileExists(audioUrl) {
   showAudioLoadingOverlay(true);
 
   try {
-    const response = await fetch(audioUrl, { method: 'HEAD' });
+    const isAudioExists = await audioExists(audioUrl);
 
-    if (!response.ok) {
-      throw new Error(`Audio file not found: ${audioUrl}`);
+    if (!isAudioExists) {
+      // throw new Error(`Audio file not found: ${audioUrl}`);
     }
 
     console.log(`✅ Audio file found: ${audioUrl}`);
@@ -302,10 +329,10 @@ function showAudioError(message) {
   }, 10000);
 }
 
-async function loadConfiguration(workId = null) {
+async function loadConfiguration(lagu = null) {
   try {
     // Use provided workId or get from URL
-    const targetWorkId = workId || processWerkParameter();
+    // const targetWorkId = workId || processWerkParameter();
 
     // Work Title, displayed as text
     // const workTitle = targetWorkId.replace('_', ' ');
@@ -322,10 +349,15 @@ async function loadConfiguration(workId = null) {
     // workTitleContainer.appendChild(workTitleElement);
     // End work title display
 
-    const configResponse = await fetch(`${ROOT_LAGU}/${targetWorkId}/exports/${targetWorkId}.config.yaml`);
+    // const configResponse = await fetch(`${ROOT_LAGU}/${targetWorkId}/exports/${targetWorkId}.config.yaml`);
 
-    const yamlText = await configResponse.text();
-    CONFIG = jsyaml.load(yamlText);
+    // const yamlText = await configResponse.text();
+    CONFIG = lagu;
+
+    if (!CONFIG) {
+      throw new Error(`Failed to load configuration for ${targetWorkId}`);
+    }
+
     const targetWorkTitle = `${CONFIG.workInfo.title} (${CONFIG.workInfo.instrument})`;
 
     const element = document.getElementById('loading-werk');
@@ -333,32 +365,28 @@ async function loadConfiguration(workId = null) {
       element.innerHTML = `Loading ${targetWorkTitle}...`;
     }
 
-    if (!configResponse.ok) {
-      throw new Error(`Failed to load configuration for ${targetWorkId}`);
-    }
-
     // Update file paths for new unified format
-    const basePath = `${ROOT_LAGU}/${targetWorkId}/exports/`;
+    // const basePath = `${ROOT_LAGU}/${targetWorkId}/exports/`;
 
     // Use config values or fall back to default naming convention
-    const svgFileName = CONFIG.files.svgPath || `${targetWorkId}.svg`;
-    const syncFileName = CONFIG.files.syncPath || `${targetWorkId}.yaml`;
-    const audioFileName = CONFIG.files.audioPath || `${targetWorkId}.wav`;
+    // const svgFileName = CONFIG.files.svgPath || `${targetWorkId}.svg`;
+    // const syncFileName = CONFIG.files.syncPath || `${targetWorkId}.yaml`;
+    // const audioFileName = CONFIG.files.audioPath || `${targetWorkId}.wav`;
 
-    CONFIG.files.svgPath = `${basePath}${svgFileName}`;
-    CONFIG.files.syncPath = `${basePath}${syncFileName}`;
-    CONFIG.files.audioPath = `${basePath}${audioFileName}`;
+    // CONFIG.files.svgPath = getRawGithubFileUrl(targetWorkId, svgFileName);
+    // CONFIG.files.syncPath = getRawGithubFileUrl(targetWorkId, syncFileName);
+    // CONFIG.files.audioPath = getRawGithubFileUrl(targetWorkId, audioFileName);
 
     // Handle CDN configuration for archive.org
-    if (CONFIG.cdn?.provider === 'archive.org' && CONFIG.cdn?.identifier) {
-      CONFIG.files.audioPath = `https://archive.org/download/${CONFIG.cdn.identifier}/${audioFileName}`;
-    }
+    // if (CONFIG.cdn?.provider === 'archive.org' && CONFIG.cdn?.identifier) {
+    //   CONFIG.files.audioPath = `https://archive.org/download/${CONFIG.cdn.identifier}/${audioFileName}`;
+    // }
 
     // Check if remote audio file exists
-    // await checkAudioFileExists(CONFIG.files.audioPath);
+    // await checkAudioFileExists(CONFIG.urls.audio);
 
     // Store the workId for reference
-    CONFIG.workId = targetWorkId;
+    // CONFIG.workId = targetWorkId;
 
     applyConfiguration();
     return CONFIG;
@@ -375,13 +403,13 @@ function applyConfiguration() {
   // Make CONFIG globally available for menu system
   window.CONFIG = CONFIG;
 
-  document.title = `${CONFIG.workInfo.title}`;
-  document.getElementById('page-title').textContent = `${CONFIG.workInfo.title} (${CONFIG.workInfo.instrument}) | ${CONFIG.workInfo.workType}`;
+  // document.title = `${CONFIG.workInfo.title}`;
+  // document.getElementById('page-title').textContent = `${CONFIG.workInfo.title} (${CONFIG.workInfo.instrument}) | ${CONFIG.workInfo.workType}`;
   document.getElementById('total_bars').textContent = CONFIG.musicalStructure.totalMeasures;
 
-  const audioSource = document.getElementById('audio-source');
-  audioSource.src = CONFIG.files.audioPath;
-  audio.load();
+  // const audioSource = document.getElementById('audio-source');
+  // audioSource.src = CONFIG.urls.audio;
+  // audio.load();
 }
 
 function showConfigurationError(message) {
@@ -400,7 +428,8 @@ function showConfigurationError(message) {
 // GLOBAL STATE VARIABLES - UPDATED FOR DYNAMIC LOADING
 // =============================================================================
 
-const audio = document.getElementById("audio");
+// const audio = document.getElementById("audio");
+let audio = null;
 let svgGlobal, bodyGlobal, headerElementGlobal, footerElementGlobal, currentBarGlobal;
 let HEADER_HEIGHT = 120;
 
@@ -414,32 +443,35 @@ let isInitialized = false;
 // DYNAMIC WORK LOADING FUNCTIONS - NEW
 // =============================================================================
 
-async function loadWorkContent(workId, isInitialLoad = false) {
+async function loadWorkContent(lagu, isInitialLoad = false) {
+  const workId = lagu.workInfo.workId;
   try {
-    console.log(`🔄 Loading work content for ${workId}...`);
+    const workTitle = lagu.workInfo.title;
+    console.log(`🔄 Memuat konfigurasi lagu ${workId} - ${workTitle}...`);
 
     // Show loading state only if not initial load
     const loadingElement = document.getElementById('loading');
     const svgContainer = document.getElementById("svg-container");
 
     if (loadingElement && !isInitialLoad) {
-      loadingElement.classList.remove('d-none');
+      loadingElement.classList.remove('hidden');
     }
 
     // 1. Load configuration
-    await loadConfiguration(workId);
+    await loadConfiguration(lagu);
 
     // 2. Load SVG and sync data in parallel
     const [svgText, syncData] = await Promise.all([
-      fetch(CONFIG.files.svgPath).then(r => {
-        if (!r.ok) throw new Error(`Failed to load SVG: ${CONFIG.files.svgPath}`);
+      fetch(CONFIG.urls.svg).then(r => {
+        if (!r.ok) throw new Error(`Failed to load SVG: ${CONFIG.urls.svg}`);
         return r.text();
       }),
-      fetch(CONFIG.files.syncPath).then(r => {
-        if (!r.ok) throw new Error(`Failed to load sync data: ${CONFIG.files.syncPath}`);
+      fetch(CONFIG.urls.sync).then(r => {
+        if (!r.ok) throw new Error(`Failed to load sync data: ${CONFIG.urls.sync}`);
         return r.text();
       }).then(yamlText => {
         const parsed = jsyaml.load(yamlText);
+        console.log('parsed:', parsed);
 
         if (!parsed.meta) {
           throw new Error('Sync data missing "meta" section');
@@ -528,7 +560,7 @@ async function loadWorkContent(workId, isInitialLoad = false) {
 
     // Hide loading (only if we showed it)
     if (loadingElement && !isInitialLoad) {
-      loadingElement.classList.add('d-none');
+      loadingElement.classList.add('hidden');
     }
 
     console.log(`✅ Successfully loaded ${workId}: ${sync.getStats().totalNotes} notes, ${sync.barCache.length} bars`);
@@ -642,10 +674,12 @@ function applyChannelColors(syncData) {
 
   // Extract notes with channel information from flow data
   const notesWithChannels = syncData.flow
-    .filter(item => item.length === 3) // Notes only
-    .map(([, , hrefs]) => {
-      return { hrefs: Array.isArray(hrefs) ? hrefs : [hrefs] };
+    .filter(item => item.length === 4) // Notes only
+    .map(([, channel, hrefs]) => {
+      return { channel, hrefs: Array.isArray(hrefs) ? hrefs : [hrefs] };
     });
+
+  console.log('notesWithChannels:', notesWithChannels);
 
   // Apply color classes to note elements using data-ref
   notesWithChannels.forEach(note => {
@@ -714,7 +748,7 @@ function applyMobileTimingAdjustment(config) {
 // APPLICATION INITIALIZATION - UPDATED FOR DYNAMIC LOADING
 // =============================================================================
 
-async function setup() {
+async function setup(lagu = null) {
   try {
     // Initialize global references that don't change
     bodyGlobal = document.querySelector('body');
@@ -738,8 +772,12 @@ async function setup() {
     // console.log('✅ BWV navigation initialization complete');
 
     // Load initial work content
-    const initialWorkId = processWerkParameter();
-    await loadWorkContent(initialWorkId, true); // true = isInitialLoad
+    // const initialWorkId = processWerkParameter();
+    if (!lagu) {
+      throw new Error('Lagu tidak ditemukan atau parameter lagu tidak valid.');
+    }
+    const laguAwal = lagu;
+    await loadWorkContent(laguAwal, true); // true = isInitialLoad
 
     // Ensure navigation state is synchronized
     // if (typeof window.getBWVNavigation === 'function') {
@@ -771,7 +809,7 @@ async function setup() {
     return;
   }
 
-  document.getElementById('loading')?.classList.add("d-none");
+  document.getElementById('loading')?.classList.add("hidden");
 }
 
 // =============================================================================
@@ -807,22 +845,58 @@ function initEventHandlers() {
 
 // Export loadWorkContent for use by navigation menu
 // Default to false for isInitialLoad when called from navigation
-window.loadWorkContent = (workId, isInitialLoad = false) => loadWorkContent(workId, isInitialLoad);
+// window.loadWorkContent = (workId, isInitialLoad = false) => loadWorkContent(workId, isInitialLoad);
 
 // Export other useful functions
-window.getAppState = () => ({
-  isInitialized,
-  currentWork: CONFIG?.workId || null,
-  sync,
-  CONFIG
-});
+// window.getAppState = () => ({
+//   isInitialized,
+//   currentWork: CONFIG?.workInfo?.workId || null,
+//   sync,
+//   CONFIG
+// });
 
 // Global references for debugging and integration
-window.sync = null; // Will be set by loadWorkContent
-window.CONFIG = null; // Will be set by loadConfiguration
+// window.sync = null; // Will be set by loadWorkContent
+// window.CONFIG = null; // Will be set by loadConfiguration
 
 // =============================================================================
 // APPLICATION STARTUP
 // =============================================================================
 
-setup();
+// setup();
+
+export function configureAudio(audioElement, lagu) {
+  audio = audioElement;
+  audio.src = lagu.urls.audio;
+  audio.load();
+}
+
+export function initPlayer(lagu) {
+  console.log('Initializing player with lagu:', lagu);
+
+  // =============================================================================
+  // GLOBAL API FOR DYNAMIC NAVIGATION - NEW
+  // =============================================================================
+
+  // Export loadWorkContent for use by navigation menu
+  // Default to false for isInitialLoad when called from navigation
+  window.loadWorkContent = (workId, isInitialLoad = false) => loadWorkContent(workId, isInitialLoad);
+
+  // Export other useful functions
+  window.getAppState = () => ({
+    isInitialized,
+    currentWork: CONFIG?.workInfo?.workId || null,
+    sync,
+    CONFIG
+  });
+
+  // Global references for debugging and integration
+  window.sync = null; // Will be set by loadWorkContent
+  window.CONFIG = null; // Will be set by loadConfiguration
+
+  // =============================================================================
+  // APPLICATION STARTUP
+  // =============================================================================
+
+  setup(lagu);
+}

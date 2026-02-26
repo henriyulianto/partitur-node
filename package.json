@@ -10,7 +10,8 @@
     "lint": "bunx --bun eslint .",
     "preview": "bunx --bun vite preview",
     "test": "bunx --bun vitest run",
-    "test:watch": "bunx --bun vitest"
+    "test:watch": "bunx --bun vitest",
+    "wrangler:dev": "bun run build:dev && bunx wrangler pages dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -79,6 +80,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react-swc": "^4.2.3",
     "autoprefixer": "^10.4.24",
+    "cross-env": "^10.1.0",
     "eslint": "^10.0.2",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",

@@ -1,6 +1,6 @@
-import type { Lagu } from "@/types/interfaces";
+import type { CDN, Files, Lagu, MeasureHighlighters, MusicalStructure, URLs, WorkInfo } from "@/types/interfaces";
 import * as yaml from 'js-yaml';
-import { normalizeNotationType, normalizeWorkType } from "@/lib/utils";
+import { normalizeNotationType, normalizeWorkType } from "@/utils/utilityLagu";
 
 /**
  * Class untuk mengelola koleksi lagu
@@ -11,12 +11,24 @@ export class KoleksiLagu {
   private loadPromise: Promise<void> | null = null;
 
   // Configuration for API source
-  private static USE_WORKERS_API = true; // Use GitHub API for local dev, Workers API for production
+  private static USE_WORKERS_API = true;
   private static GITHUB_TOKEN?: string; // Optional: Personal Access Token for higher rate limits
-  private static WORKERS_API_URL = 'https://animasi-partitur.pages.dev/api/songs'; // Use production API for local dev
+  private static WORKERS_API_URL = '/api/songs';
 
   // Storage key for localStorage
   private static TOKEN_STORAGE_KEY = 'partitur-github-token';
+
+  /**
+   * Get raw GitHub file URL
+   * @param title - Song title/directory name
+   * @param filename - File name to fetch
+   * @returns Raw GitHub file URL
+   */
+  private getRawGithubFileUrl(title: string, filename: string) {
+    const GITHUB_OWNER = 'henriyulianto';
+    const GITHUB_REPO = 'partitur-data';
+    return `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${title}/exports/${filename}`;
+  }
 
   /**
    * Initialize token from localStorage on first access
@@ -119,8 +131,8 @@ export class KoleksiLagu {
           songs.forEach(lagu => this.addLagu(lagu));
           console.log(`Loaded ${songs.length} songs from Workers API`);
         } else {
-          console.warn('No songs found in Workers API response, using fallback data');
-          this._loadFallbackData();
+          console.warn('No songs found in Workers API response.');
+          // this._loadFallbackData();
         }
       } else {
         console.log('Loading songs directly from GitHub API...');
@@ -130,15 +142,12 @@ export class KoleksiLagu {
           songs.forEach(lagu => this.addLagu(lagu));
           console.log(`Loaded ${songs.length} songs from GitHub API`);
         } else {
-          console.warn('No songs found in GitHub repository, using fallback data');
-          this._loadFallbackData();
+          console.warn('No songs found in GitHub repository');
         }
       }
 
     } catch (error) {
       console.error('Error loading songs:', error);
-      console.log('Using fallback data');
-      this._loadFallbackData();
     } finally {
       this.isLoaded = true;
     }
@@ -158,12 +167,13 @@ export class KoleksiLagu {
     // Get repository contents
     const headers: Record<string, string> = {
       'User-Agent': 'Partitur-App/1.0',
-      'Accept': 'application/vnd.github.v3+json'
+      'Accept': 'application/vnd.github.v3+json',
+      'X-GitHub-Api-Version': '2022-11-28'
     };
 
     // Add authorization token if available
     if (KoleksiLagu.GITHUB_TOKEN) {
-      headers['Authorization'] = `token ${KoleksiLagu.GITHUB_TOKEN}`;
+      headers['Authorization'] = `Bearer ${KoleksiLagu.GITHUB_TOKEN}`;
     }
 
     console.log('Fetching from GitHub API:', GITHUB_API_URL);
@@ -195,12 +205,13 @@ export class KoleksiLagu {
 
         const configHeaders: Record<string, string> = {
           'User-Agent': 'Partitur-App/1.0',
-          'Accept': 'application/vnd.github.raw+json'
+          'Accept': 'application/vnd.github.raw+json',
+          'X-GitHub-Api-Version': '2022-11-28'
         };
 
         // Add authorization token if available
         if (KoleksiLagu.GITHUB_TOKEN) {
-          configHeaders['Authorization'] = `token ${KoleksiLagu.GITHUB_TOKEN}`;
+          configHeaders['Authorization'] = `Bearer ${KoleksiLagu.GITHUB_TOKEN}`;
         }
 
         const configResponse = await fetch(configUrl, { headers: configHeaders });
@@ -213,41 +224,57 @@ export class KoleksiLagu {
         const configContent = await configResponse.text();
         console.debug('Config content:', configContent.substring(0, 100));
 
-        // Decode base64 content
-        // const configContent = atob(configData.content);
-        // const configContent = configData;
-
-        // Simple YAML parsing (since we don't have js-yaml in browser)
-        // const config = this._parseYAML(configContent);
         const config = yaml.load(configContent);
-        console.debug('Config:', config);
-        const workInfo = (config as Record<string, unknown>)?.workInfo as Record<string, unknown> || {};
-
-        // Validate that we have the required workInfo fields
-        if (!workInfo.title || !workInfo.composer) {
-          console.warn(`Skipping ${dir.name}: missing required workInfo fields (title or composer)`);
+        if (!config) {
+          console.warn(`Skipping ${dir.name}: invalid or no config file`);
           continue;
         }
 
-        // Construct song object
+        type yamlRecord = Record<string, unknown>;
+
+        const slug = (config as yamlRecord)?.workId || dir.name;
+        const workInfoData: unknown = (config as yamlRecord)?.workInfo as yamlRecord || {};
+        const cdnData: unknown = (config as yamlRecord)?.cdn as yamlRecord || {};
+        const filesData: unknown = (config as yamlRecord)?.files as yamlRecord || {};
+        const musicalStructureData: unknown = (config as yamlRecord)?.musicalStructure as yamlRecord || {};
+        const measureHighlightersData: unknown = (config as yamlRecord)?.measureHighlighters as yamlRecord || {};
+        const urlsData: unknown = (config as yamlRecord)?.urls as yamlRecord || {};
+
+        const workInfo = workInfoData as WorkInfo;
+
+        // Construct song object matching Workers API logic
         const song: Lagu = {
-          slug: dir.name,
-          judul: (workInfo.title as string) || dir.name,
-          deskripsi: (workInfo.fullTitle as string) || '',
-          tipeNotasi: normalizeNotationType((workInfo.notationType as string) || 'not angka'),
-          jenisKarya: normalizeWorkType((workInfo.workType as string) || 'Komposisi'),
-          composer: (workInfo.composer as string) || '',
-          arranger: (workInfo.arranger as string) || (workInfo.composer as string) || '',
-          lyricist: (workInfo.lyricist as string) || (workInfo.composer as string) || '',
-          instrument: (workInfo.instrument as "1 Suara" | "2 Suara" | "3 Suara" | "4 Suara atau lebih" | "Alat Musik") || '1 Suara',
-          gender: (workInfo.gender as "Wanita" | "Pria" | "Campuran") || 'Campuran',
-          externalUrl: (workInfo.externalURL as string)
+          // Identitas Lagu
+          slug: (config as yamlRecord)?.workId || dir.name,
+          ...config as Lagu,
+          files: {
+            audioPath: (filesData as Files)?.audioPath || `${workInfo.workId}.m4a`,
+            svgPath: (filesData as Files)?.svgPath || `${workInfo.workId}.svg`,
+            syncPath: (filesData as Files)?.syncPath || `${workInfo.workId}.yaml`,
+          },
+          urls: null
         };
 
-        // Validate required fields
-        if (song.judul && song.composer) {
+        // Build URLs matching Workers API logic
+        const getRawGithubFileUrl = (title: string, filename: string = title) => {
+          return `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${title}/exports/${filename}`;
+        };
+
+        song.urls = {
+          audio: song.cdn?.provider === 'archive.org'
+            ? `https://${song.cdn.provider}/download/${song.cdn.identifier}/${song.files.audioPath}`
+            : getRawGithubFileUrl(song.slug, song.files.audioPath),
+          pdf: `${getRawGithubFileUrl(song.slug)}.pdf`,
+          svg: getRawGithubFileUrl(song.slug, song.files.svgPath),
+          sync: getRawGithubFileUrl(song.slug, song.files.syncPath),
+        };
+
+        // Validate required fields (matching Workers API)
+        if (song.workInfo.title && song.workInfo.workId) {
           songs.push(song);
-          console.log(`Successfully loaded song: ${song.judul}`);
+          console.log(`Successfully loaded song: ${workInfo.title}`);
+        } else {
+          console.warn(`Skipping ${dir.name}: missing required fields (title or workId)`);
         }
 
       } catch (error) {
@@ -294,82 +321,6 @@ export class KoleksiLagu {
   }
 
   /**
-   * Load fallback data when directory loading fails
-   */
-  private _loadFallbackData() {
-    // Use the hardcoded data as fallback
-    const fallbackData: Lagu[] = [
-      {
-        slug: "serenade-malam",
-        judul: "Serenade Malam",
-        deskripsi: "Sebuah komposisi lembut untuk piano solo yang menggambarkan keindahan malam yang tenang dan penuh bintang.",
-        tipeNotasi: "Not Balok",
-        jenisKarya: "Komposisi",
-        composer: "Andi Setiawan",
-        arranger: "Andi Setiawan",
-        lyricist: "Andi Setiawan",
-        instrument: "1 Suara",
-        gender: "Pria",
-        externalUrl: "https://www.youtube.com/watch?v=example1",
-      },
-      {
-        slug: "tarian-angin",
-        judul: "Tarian Angin",
-        deskripsi: "Aransemen dinamis dari melodi tradisional yang menggambarkan gerakan angin di padang rumput.",
-        tipeNotasi: "Not Angka",
-        jenisKarya: "Aransemen",
-        composer: "Budi Prasetyo",
-        arranger: "Citra Dewi",
-        lyricist: "Budi Prasetyo",
-        instrument: "2 Suara",
-        gender: "Campuran",
-        externalUrl: "https://www.facebook.com/watch?v=example2",
-      },
-      {
-        slug: "gema-nusantara",
-        judul: "Gema Nusantara",
-        deskripsi: "Salinan partitur orkestra yang mengangkat tema-tema musik daerah Indonesia dalam format simfoni.",
-        tipeNotasi: "Not Kombinasi",
-        jenisKarya: "Salinan",
-        composer: "Dewi Lestari",
-        arranger: "Eka Putra",
-        lyricist: "Farah Amalia",
-        instrument: "4 Suara atau lebih",
-        gender: "Campuran",
-        externalUrl: "https://www.youtube.com/watch?v=example3",
-      },
-      {
-        slug: "fajar-di-ufuk-timur",
-        judul: "Fajar di Ufuk Timur",
-        deskripsi: "Komposisi untuk ansambel tiup yang menggambarkan matahari terbit dengan crescendo megah.",
-        tipeNotasi: "Not Balok",
-        jenisKarya: "Komposisi",
-        composer: "Galih Permana",
-        arranger: "Galih Permana",
-        lyricist: "Hana Safitri",
-        instrument: "3 Suara",
-        gender: "Wanita",
-        externalUrl: "https://www.instagram.com/p/example4",
-      },
-      {
-        slug: "langkah-sunyi",
-        judul: "Langkah Sunyi",
-        deskripsi: "Aransemen minimalis untuk gitar klasik dengan nuansa kontemplatif dan meditatif.",
-        tipeNotasi: "Not Angka",
-        jenisKarya: "Aransemen",
-        composer: "Irfan Maulana",
-        arranger: "Joko Widodo",
-        lyricist: "Joko Widodo",
-        instrument: "Alat Musik",
-        gender: "Pria",
-        externalUrl: "https://www.youtube.com/watch?v=example5",
-      },
-    ];
-
-    fallbackData.forEach(lagu => this.addLagu(lagu));
-  }
-
-  /**
    * Menambahkan lagu ke koleksi
    * @param lagu - Data lagu yang akan ditambahkan
    */
@@ -403,29 +354,8 @@ export class KoleksiLagu {
   cariLagu(keyword: string): Lagu[] {
     const lower = keyword.toLowerCase();
     return this.items.filter(
-      (l) =>
-        l.judul.toLowerCase().includes(lower) ||
-        l.deskripsi.toLowerCase().includes(lower)
+      (l) => l.workInfo.title.toLowerCase().includes(lower)
     );
-  }
-
-  /**
-   * Format deskripsi singkat berdasarkan kombinasi composer/arranger/lyricist
-   * @param lagu - Data lagu
-   * @returns Formatted credits string
-   */
-  static formatCredits(lagu: Lagu): string {
-    const { composer, arranger, lyricist } = lagu;
-    const allSame = composer === arranger && arranger === lyricist;
-    const compArr = composer === arranger;
-    const compLyr = composer === lyricist;
-    const arrLyr = arranger === lyricist;
-
-    if (allSame) return `Lagu, syair, dan aransemen: ${composer.toUpperCase()}`;
-    if (compArr) return `Lagu dan aransemen: ${composer.toUpperCase()} | Syair: ${lyricist.toUpperCase()}`;
-    if (compLyr) return `Lagu dan syair: ${composer.toUpperCase()} | Aransemen: ${arranger.toUpperCase()}`;
-    if (arrLyr) return `Lagu: ${composer.toUpperCase()} | Syair dan aransemen: ${arranger.toUpperCase()}`;
-    return `Lagu: ${composer.toUpperCase()} | Syair: ${lyricist.toUpperCase()} | Aransemen: ${arranger.toUpperCase()}`;
   }
 }
 

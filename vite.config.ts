@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
     },
     proxy: {
       '/api/songs': {
-        target: 'https://animasi-partitur.pages.dev/api/songs',
+        target: 'http://localhost:8788',
         changeOrigin: true,
         secure: false,
       },
@@ -24,8 +24,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // assetsInclude: ['**/*.js'],
   build: {
     chunkSizeWarningLimit: 1000,
+    minify: mode === 'production',
     rollupOptions: {
       output: {
         manualChunks: {

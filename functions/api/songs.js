@@ -1,26 +1,30 @@
 // Cloudflare Pages Function for songs API
 import yaml from 'js-yaml';
 
-// Normalize notation type (matches src/lib/utils.ts)
-const normalizeNotationType = (type) => {
-  const normalizedType = type.toLowerCase();
-  return normalizedType.includes('angka') ? 'Not Angka' :
-    normalizedType.includes('balok') ? 'Not Balok' :
-      normalizedType.includes('kombinasi') ? 'Not Kombinasi' :
-        'Not Angka';
-};
-
-// Normalize work type (matches src/lib/utils.ts)
-const normalizeWorkType = (type) => {
-  const normalizedType = type.toLowerCase();
-  return normalizedType.includes('komposisi') ? 'Komposisi' :
-    normalizedType.includes('aransemen') ? 'Aransemen' :
-      normalizedType.includes('salinan') ? 'Salinan' :
-        'Komposisi';
-};
-
 export async function onRequest(context) {
   const { request, env } = context;
+
+  const getRawGithubFileUrl = (title, filename = title) => {
+    const GITHUB_OWNER = env.GITHUB_OWNER || 'henriyulianto';
+    const GITHUB_REPO = env.GITHUB_REPO || 'partitur-data';
+    return `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${title}/exports/${filename}`;
+  }
+
+  const buildHeaders = (accept = 'application/vnd.github+json') => {
+    const headers = {
+      'User-Agent': 'Partitur-App/1.0',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'Accept': accept
+    };
+
+    // Add authorization token if available
+    const token = env.GITHUB_TOKEN || env.GITHUB_API_TOKEN || '';
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
+  }
 
   try {
     // GitHub API configuration
@@ -29,17 +33,9 @@ export async function onRequest(context) {
     const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/`;
 
     // Get repository contents
-    const headers = {
-      'User-Agent': 'Partitur-App/1.0',
-      'Accept': 'application/vnd.github.v3+json'
-    };
-
-    // Add authorization token if available
-    if (env.GITHUB_TOKEN) {
-      headers['Authorization'] = `token ${env.GITHUB_TOKEN}`;
-    }
-
-    const response = await fetch(GITHUB_API_URL, { headers });
+    const response = await fetch(GITHUB_API_URL, {
+      headers: buildHeaders()
+    });
 
     if (!response.ok) {
       throw new Error(`GitHub API error: ${response.status}`);
@@ -59,11 +55,9 @@ export async function onRequest(context) {
       try {
         // Get config file for each song
         const configUrl = `${GITHUB_API_URL}${dir.name}/exports/${dir.name}.config.yaml`;
+
         const configResponse = await fetch(configUrl, {
-          headers: {
-            'User-Agent': 'Partitur-App/1.0',
-            'Accept': 'application/vnd.github.raw+json'
-          }
+          headers: buildHeaders('application/vnd.github.raw+json')
         });
 
         if (!configResponse.ok) continue;
@@ -72,22 +66,29 @@ export async function onRequest(context) {
         const config = yaml.load(configContent);
 
         // Construct song object
-        const song = {
-          slug: dir.name,
-          judul: config.workInfo.title || dir.name,
-          deskripsi: config.workInfo.fullTitle || '',
-          tipeNotasi: normalizeNotationType(config.workInfo.notationType || 'not angka'),
-          jenisKarya: normalizeWorkType(config.workInfo.workType || 'Komposisi'),
-          composer: config.workInfo.composer || '',
-          arranger: config.workInfo.arranger || config.workInfo.composer || '',
-          lyricist: config.workInfo.lyricist || config.workInfo.composer || '',
-          instrument: config.workInfo.instrument || '1 Suara',
-          gender: config.workInfo.gender || 'Campuran',
-          externalUrl: config.workInfo.externalURL
+        let song = {
+          // Identitas Lagu
+          slug: config.workId || dir.name,
+          ...config,
+          files: {
+            audioPath: config.files.audioPath || `${config.workInfo.workId}.m4a`,
+            svgPath: config.files.svgPath || `${config.workInfo.workId}.svg`,
+            syncPath: config.files.syncPath || `${config.workInfo.workId}.yaml`,
+          },
+          urls: null
+        };
+
+        song.urls = {
+          audio: song.cdn.provider === 'archive.org'
+            ? `https://${song.cdn.provider}/download/${song.cdn.identifier}/${song.files.audioPath}`
+            : getRawGithubFileUrl(song.slug, song.files.audioPath),
+          pdf: `${getRawGithubFileUrl(song.slug)}.pdf`,
+          svg: getRawGithubFileUrl(song.slug, song.files.svgPath),
+          sync: getRawGithubFileUrl(song.slug, song.files.syncPath),
         };
 
         // Validate required fields
-        if (song.judul && song.composer) {
+        if (song.workInfo.title && song.workInfo.workId) {
           songs.push(song);
         }
 
@@ -102,7 +103,7 @@ export async function onRequest(context) {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Cache-Control': 'public, max-age=300' // Cache for 5 minutes
+        'Cache-Control': 'public, max-age=600' // Cache for 10 minutes
       }
     });
 
