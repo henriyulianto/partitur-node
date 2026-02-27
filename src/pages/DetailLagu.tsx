@@ -128,11 +128,11 @@ const DetailLagu = () => {
             </div>
           </div>
 
-          {/* Loading state */}
+          {/* Loading overlay */}
           <div
             id="loading"
-            className="flex items-center justify-center min-h-100 bg-background"
-            style={{ position: 'relative' }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+            style={{ position: 'fixed' }}
           >
             <div className="text-center">
               <div
