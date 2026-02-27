@@ -95,6 +95,16 @@
   color: black;
 }
 
+/* Override inline SVG styles - scope path:not([data-ref]) to hyplayer only */
+.hyplayer-root #svg-container>svg path:not([data-ref]) {
+  fill: currentColor;
+}
+
+/* Reset path styles outside hyplayer to prevent SVG inline styles interference */
+:not(.hyplayer-root) path:not([data-ref]) {
+  fill: revert;
+}
+
 .hyplayer-root #svg-container>svg a.notangka {
   color: black;
 }
