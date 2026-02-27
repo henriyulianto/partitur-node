@@ -132,7 +132,6 @@ const DetailLagu = () => {
           <div
             id="loading"
             className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-            style={{ position: 'fixed' }}
           >
             <div className="text-center">
               <div
