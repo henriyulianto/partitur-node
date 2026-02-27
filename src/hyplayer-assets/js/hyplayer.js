@@ -360,10 +360,10 @@ async function loadConfiguration(lagu = null) {
 
     const targetWorkTitle = `${CONFIG.workInfo.title} (${CONFIG.workInfo.instrument})`;
 
-    const element = document.getElementById('loading-werk');
-    if (element) {
-      element.innerHTML = `Loading ${targetWorkTitle}...`;
-    }
+    // const element = document.getElementById('loading-werk');
+    // if (element) {
+    //   element.innerHTML = `Loading ${targetWorkTitle}...`;
+    // }
 
     // Update file paths for new unified format
     // const basePath = `${ROOT_LAGU}/${targetWorkId}/exports/`;
@@ -643,7 +643,7 @@ function scrollToBar(barNumber) {
 
   const currentScrollY = window.scrollY;
   const targetPageY = minTop + currentScrollY;
-  const desiredScrollY = targetPageY - HEADER_HEIGHT - padding;
+  const desiredScrollY = barNumber === 0 ? 0 : targetPageY - HEADER_HEIGHT - padding;
 
   window.scrollTo({
     top: desiredScrollY,
