@@ -82,6 +82,26 @@ export async function onRequest(context) {
           sync: getRawGithubFileUrl(song.slug, song.files.syncPath),
         };
 
+        // Add cache metadata for static files
+        song.cacheInfo = {
+          svg: {
+            ttl: 31536000, // 1 year - SVG files never change
+            type: 'image/svg+xml'
+          },
+          pdf: {
+            ttl: 31536000, // 1 year - PDF files never change
+            type: 'application/pdf'
+          },
+          sync: {
+            ttl: 86400, // 1 day - sync files might change
+            type: 'application/x-yaml'
+          },
+          audio: {
+            ttl: 31536000, // 1 year - audio files never change
+            type: 'audio/mp4'
+          }
+        };
+
         // Validate required fields
         if (song.workInfo.title && song.workInfo.workId) {
           songs.push(song);
