@@ -603,6 +603,12 @@ export class Synchronisator {
         this.callbacks.onPlayStateChange(false);
         this.stop();
         this.audio.currentTime = 0;
+
+        // Scroll to top when audio ends
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
       });
 
       // Seeking handlers - handle bar snapping and visual sync
