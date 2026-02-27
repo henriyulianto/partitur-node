@@ -4,6 +4,8 @@
 
 Aplikasi web penampil partitur dengan animasi notasi, yang dikembangkan dengan React, TypeScript, dan di-deploy terutama ke Cloudflare Pages. 🎵
 
+> **Catatan**: Web app ini adalah hasil konversi dari web berbasis Jekyll yang di-host di repository: <https://github.com/henriyulianto/partitur>
+
 ## Fitur
 
 - 🎵 **Pemutar Musik Interaktif** - Putar dan kontrol pemutaran musik
@@ -22,9 +24,9 @@ Aplikasi web penampil partitur dengan animasi notasi, yang dikembangkan dengan R
 - **Routing**: React Router v6 dengan animasi Framer Motion
 - **State Management**: TanStack Query untuk pengambilan data
 - **Backend**: Cloudflare Pages Functions (Workers)
-- **Sumber Data**: API GitHub dengan file konfigurasi YAML
+- **Sumber Data**: <https://github.com/henriyulianto/partitur-data> dengan file konfigurasi YAML
 - **Deployment**: Cloudflare Pages dengan cache edge
-- **Package Manager**: Bun
+- **Package Manager**: Bun (alternatif: npm/pnpm/yarn - silakan merujuk dokumentasi package manager yang Anda gunakan)
 
 ## Pengembangan
 
@@ -34,6 +36,7 @@ bun install
 
 # Start development server
 bun run dev
+# Alternatif: bunx wrangler pages dev
 
 # Build for production
 bun run build
@@ -42,7 +45,7 @@ bun run build
 bun run deploy
 ```
 
-## Variabel Lingkungan
+## Variabel Lingkungan Pengembangan
 
 Buat file `.env.local` untuk pengembangan lokal:
 
@@ -52,7 +55,7 @@ GITHUB_REPO=partitur-data
 GITHUB_TOKEN=token_github_anda_di_sini
 ```
 
-## Struktur Proyek
+## Struktur Direktori Proyek
 
 ```
 partitur-node/
@@ -62,6 +65,10 @@ partitur-node/
 │   │   ├── LaguCard.tsx     # Komponen kartu lagu
 │   │   ├── LaguBadge.tsx    # Badge tipe lagu
 │   │   └── APIConfig.tsx    # UI konfigurasi API
+│   ├── hyplayer-assets/     # Aset hyplayer (CSS, JS, gambar)
+│   │   ├── css/             # Stylesheets hyplayer
+│   │   ├── js/              # JavaScript hyplayer
+│   │   └── images/          # Gambar dan ikon
 │   ├── lib/                 # Fungsi utilitas
 │   │   └── utils.ts         # Utilitas bersama
 │   ├── models/              # Model data
@@ -86,11 +93,11 @@ partitur-node/
 ## Arsitektur API
 
 ### Alur Data
-1. **Frontend** meminta data lagu dari `/api/songs`
+1. **Frontend** meminta data lagu dari Cloudflare Pages Function `/api/songs`
 2. **Cloudflare Pages Function** mengambil dari API GitHub
 3. **API GitHub** mengembalikan konten repositori
 4. **Function** memproses file YAML dan menormalisasi data
-5. **Respon di-cache** disajikan dengan cache edge 5 menit
+5. **Respon di-cache** disajikan dengan cache edge 10 menit
 
 ### Batas Rate
 - **Tanpa Token**: 60 permintaan/jam (API GitHub)
@@ -103,7 +110,7 @@ partitur-node/
 
 1. **Hubungkan Repositori**: Hubungkan repositori GitHub ke Cloudflare Pages
 2. **Pengaturan Build**:
-   - Build command: `bun run build`
+   - Build command: `bun run build` (production) atau `bun run build:dev` (development)
    - Build output directory: `dist`
    - Root directory: `/`
 3. **Variabel Lingkungan**: Atur kredensial GitHub di dashboard Pages
@@ -114,26 +121,26 @@ partitur-node/
 ```bash
 # Build dan deploy
 bun run build
-wrangler pages deploy dist --project-name=animasi-partitur
+wrangler pages deploy dist --project-name=<nama-proyek>
 ```
 
 ## Konfigurasi
 
 ### Integrasi API GitHub
-- Repositori: `henriyulianto/partitur-data`
+- Repositori: <https://github.com/henriyulianto/partitur-data>
 - Data lagu disimpan sebagai file YAML di direktori `exports/`
 - Normalisasi otomatis tipe notasi dan jenis karya
 - Data fallback untuk penanganan error
 
 ### API Workers
 - Endpoint: `/api/songs`
-- Durasi cache: 5 menit
+- Durasi cache: 10 menit
 - CORS diaktifkan untuk frontend
 - Penanganan error dengan kode status HTTP yang tepat
 
 ## Optimasi Performa
 
-- **Edge Caching**: Cache 5 menit untuk respons API
+- **Edge Caching**: Cache 10 menit untuk respons API
 - **Code Splitting**: Chunk vendor otomatis
 - **Optimasi Gambar**: Lazy loading dengan ukuran yang tepat
 - **Font Loading**: Google Fonts dengan preload
@@ -142,7 +149,7 @@ wrangler pages deploy dist --project-name=animasi-partitur
 ## Kontribusi
 
 1. Fork repositori
-2. Buat cabang fitur
+2. Buat cabang fitur (feature branch)
 3. Lakukan perubahan Anda
 4. Uji secara menyeluruh
 5. Kirim pull request
