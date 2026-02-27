@@ -105,8 +105,29 @@
   fill: revert;
 }
 
+/* SVG Styling Rules - External control for better maintainability */
+.hyplayer-root #svg-container>svg tspan {
+  white-space: pre;
+}
+
+/* Bar highlighting rectangles - initially transparent */
+.hyplayer-root #svg-container>svg rect[data-bar] {
+  fill: none;
+}
+
+/* Note heads and musical symbols */
+.hyplayer-root #svg-container>svg path[data-ref] {
+  fill: currentColor;
+}
+
+/* Solmisasi note heads */
 .hyplayer-root #svg-container>svg a.notangka {
-  color: black;
+  fill: currentColor;
+}
+
+/* Generic rectangles (stems, etc.) */
+.hyplayer-root #svg-container>svg rect:not([data-bar]) {
+  fill: currentColor;
 }
 
 /* Hide invisible paths */
