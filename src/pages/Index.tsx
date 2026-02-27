@@ -139,13 +139,13 @@ const Index = () => {
         </Collapsible>
 
         {/* Song list */}
-        <div className="grid gap-4">
+        <div className="grid gap-4 md:grid-cols-2">
           <AnimatePresence mode="popLayout">
             {isLoading ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="rounded-lg border border-dashed p-12 text-center text-muted-foreground"
+                className="md:col-span-2 rounded-lg border border-dashed p-12 text-center text-muted-foreground"
               >
                 Mengambil data lagu dari repositori partitur-data...
               </motion.div>
@@ -165,7 +165,7 @@ const Index = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="rounded-lg border border-dashed p-12 text-center text-muted-foreground"
+                className="md:col-span-2 rounded-lg border border-dashed p-12 text-center text-muted-foreground"
               >
                 {hasFilter ? "Tidak ada lagu yang cocok dengan filter." : "Daftar lagu kosong atau ada masalah."}
               </motion.div>
