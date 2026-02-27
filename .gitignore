@@ -39,6 +39,9 @@ build/
 .DS_Store
 Thumbs.db
 
+# Wrangler
+.wrangler/
+
 # Logs
 logs/
 *.log
