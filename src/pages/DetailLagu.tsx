@@ -131,9 +131,9 @@ const DetailLagu = () => {
           {/* Loading overlay */}
           <div
             id="loading"
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm min-h-screen"
           >
-            <div className="text-center">
+            <div className="text-center transition-all duration-300 ease-out">
               <div
                 className="inline-block animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"
                 style={{ width: '4rem', height: '4rem', color: '#8B4513' }}
