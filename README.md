@@ -1,5 +1,7 @@
 # Animasi Partitur Musik
 
+[![Deploy to Cloudflare Pages](https://github.com/henriyulianto/partitur-node/actions/workflows/deploy.yml/badge.svg)](https://github.com/henriyulianto/partitur-node/actions/workflows/deploy.yml)
+
 Aplikasi web penampil partitur dengan animasi notasi, yang dikembangkan dengan React, TypeScript, dan di-deploy terutama ke Cloudflare Pages. 🎵
 
 ## Fitur
