@@ -30,29 +30,47 @@ Aplikasi web penampil partitur dengan animasi notasi, yang dikembangkan dengan R
 
 ## Pengembangan
 
+### Install dependencies
 ```bash
-# Install dependencies
 bun install
+```
 
-# Start development server
+### Build (development, asset tidak di-minify)
+```bash
+bun run build:dev
+```
+
+### Build (production, asset di-minify)
+```bash
+bun run build
+```
+
+### Start development server
+```bash
 bun run dev
-# Alternatif: bunx wrangler pages dev
+```
 
-# Build for production
-bun run build
+### Alternatif start development server dengan `wrangler`
+```bash
+wrangler pages dev
+```
 
-# Deploy ke Cloudflare Pages
+### Alternatif start development server dengan `bunx wrangler`
+```bash
+bunx wrangler pages dev
+```
 
-**Cara 1: Langsung dengan Wrangler**
+## Deploy ke Cloudflare Pages
+
+### Cara 1: Langsung dengan Wrangler
 ```bash
 wrangler pages deploy dist --project-name=<nama-proyek>
 ```
 
-**Cara 2: Manual build + deploy**
+### Cara 2: Manual build + deploy
 ```bash
 bun run build
 wrangler pages deploy dist --project-name=<nama-proyek>
-```
 ```
 
 ## Variabel Lingkungan Pengembangan
