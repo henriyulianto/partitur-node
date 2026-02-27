@@ -42,7 +42,17 @@ bun run dev
 bun run build
 
 # Deploy ke Cloudflare Pages
-bun run deploy
+
+**Cara 1: Langsung dengan Wrangler**
+```bash
+wrangler pages deploy dist --project-name=<nama-proyek>
+```
+
+**Cara 2: Manual build + deploy**
+```bash
+bun run build
+wrangler pages deploy dist --project-name=<nama-proyek>
+```
 ```
 
 ## Variabel Lingkungan Pengembangan
