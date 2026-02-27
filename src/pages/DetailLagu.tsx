@@ -1,15 +1,18 @@
 import { useParams, Navigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import AppLayout from "@/components/AppLayout";
-import { koleksiLagu } from "@/models/KoleksiLagu";
+import { KoleksiLagu, koleksiLagu } from "@/models/KoleksiLagu";
 import { NotasiBadge, KaryaBadge } from "@/components/LaguBadge";
 import { User, Music, Mic2, Piano } from "lucide-react";
 import { normalizeNotationType, normalizeWorkType, formatCredits } from "@/utils/utilityLagu";
+import { type Lagu } from "@/types/interfaces";
 import "@/hyplayer-assets/css/hyplayer.css";
 
 const DetailLagu = () => {
   const { slug } = useParams<{ slug: string }>();
-  const lagu = slug ? koleksiLagu.getLaguBySlug(slug) : undefined;
+  const [lagu, setLagu] = useState<Lagu | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Scroll to top when component mounts
@@ -17,31 +20,56 @@ const DetailLagu = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Initialize hyplayer when component mounts
+  // Load lagu data
   useEffect(() => {
-    if (!slug || !lagu) return;
+    const loadLagu = async () => {
+      if (!slug) {
+        setError("Slug tidak ditemukan");
+        setIsLoading(false);
+        return;
+      }
 
-    // Update document title
-    if (lagu?.workInfo?.title) {
-      document.title = `${lagu.workInfo.title} - Animasi Partitur Musik`;
-    }
+      try {
+        setIsLoading(true);
+        // Wait for koleksiLagu to finish loading
+        await koleksiLagu.waitForLoad();
+        const laguData = koleksiLagu.getLaguBySlug(slug);
+
+        if (!laguData) {
+          setError(`Lagu dengan slug "${slug}" tidak ditemukan`);
+        } else {
+          setLagu(laguData);
+          // Update document title
+          document.title = `${laguData.workInfo.title} - Animasi Partitur Musik`;
+        }
+      } catch (err) {
+        console.error("Error loading lagu:", err);
+        setError("Gagal memuat data lagu");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadLagu();
+  }, [slug]);
+
+  // Initialize hyplayer when lagu is loaded
+  useEffect(() => {
+    if (!lagu) return;
 
     // Dynamic import hyplayer.js
     import('@/hyplayer-assets/js/hyplayer')
       .then(module => {
-        // Inisialisasi modul hyplayer.js
         module.initPlayer(lagu);
-
-        // Konfigurasi audio element
         if (audioRef.current) {
           module.configureAudio(audioRef.current, lagu);
         }
       })
       .catch(console.error);
-  }, [slug, lagu]);
+  }, [lagu]);
 
   // Show loading state while data is loading
-  if (!lagu && slug) {
+  if (isLoading) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center min-h-screen">

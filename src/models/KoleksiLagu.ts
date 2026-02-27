@@ -108,6 +108,13 @@ export class KoleksiLagu {
   }
 
   /**
+   * Public method to wait for data loading
+   */
+  async waitForLoad(): Promise<void> {
+    await this.ensureLoaded();
+  }
+
+  /**
    * Load lagu from API
    * Fetches data from GitHub API or Cloudflare Workers API
    */
