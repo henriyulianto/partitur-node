@@ -1,12 +1,19 @@
 {
-  "name": "animasi-partitur",
-  "compatibility_date": "2026-02-25",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "pages_build_output_dir": "dist",
-  "vars": {
-    "GITHUB_OWNER": "henriyulianto",
-    "GITHUB_REPO": "partitur-data"
-  }
+	"name": "animasi-partitur",
+	"compatibility_date": "2026-02-25",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"pages_build_output_dir": "dist",
+	"vars": {
+		"GITHUB_OWNER": "henriyulianto",
+		"GITHUB_REPO": "partitur-data"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "PARTITUR_DATA_CACHE",
+			"id": "9161ae7d5b054b97bb8d5458fa9a06bf",
+			"remote": true
+		}
+	]
 }

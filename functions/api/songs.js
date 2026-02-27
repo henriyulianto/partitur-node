@@ -1,4 +1,4 @@
-// Cloudflare Pages Function for songs API
+// Cloudflare Pages Function for songs API with KV Cache
 import yaml from 'js-yaml';
 
 export async function onRequest(context) {
@@ -26,12 +26,7 @@ export async function onRequest(context) {
     return headers;
   }
 
-  try {
-    // GitHub API configuration
-    const GITHUB_OWNER = env.GITHUB_OWNER || 'henriyulianto';
-    const GITHUB_REPO = env.GITHUB_REPO || 'partitur-data';
-    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/`;
-
+  const fetchSongsFromGitHub = async (GITHUB_OWNER, GITHUB_REPO, GITHUB_API_URL) => {
     // Get repository contents
     const response = await fetch(GITHUB_API_URL, {
       headers: buildHeaders()
@@ -97,13 +92,71 @@ export async function onRequest(context) {
       }
     }
 
-    return new Response(JSON.stringify(songs), {
+    return songs;
+  }
+
+  try {
+    // GitHub API configuration
+    const GITHUB_OWNER = env.GITHUB_OWNER || 'henriyulianto';
+    const GITHUB_REPO = env.GITHUB_REPO || 'partitur-data';
+    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/`;
+
+    // Check KV cache first
+    const cachedData = await env.PARTITUR_DATA_CACHE.get('songs_data');
+    const cachedCommitTime = await env.PARTITUR_DATA_CACHE.get('last_commit_time');
+
+    // Get latest commit from GitHub
+    const commitsUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/commits`;
+    const commitsResponse = await fetch(commitsUrl, {
+      headers: buildHeaders()
+    });
+
+    if (!commitsResponse.ok) {
+      throw new Error(`GitHub commits API error: ${commitsResponse.status}`);
+    }
+
+    const commits = await commitsResponse.json();
+    const latestCommitTime = commits[0].commit.committer.date;
+
+    // Compare cache and update if needed
+    if (cachedCommitTime !== latestCommitTime || !cachedData) {
+      console.log('🔄 Cache miss or outdated, fetching fresh data from GitHub');
+
+      // Fetch fresh data
+      const freshData = await fetchSongsFromGitHub(GITHUB_OWNER, GITHUB_REPO, GITHUB_API_URL);
+
+      // Update cache
+      await env.PARTITUR_DATA_CACHE.put('songs_data', JSON.stringify(freshData));
+      await env.PARTITUR_DATA_CACHE.put('last_commit_time', latestCommitTime);
+      await env.PARTITUR_DATA_CACHE.put('cache_timestamp', new Date().toISOString());
+
+      console.log('✅ Cache updated with fresh data');
+
+      return new Response(JSON.stringify(freshData), {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          'Cache-Control': 'public, max-age=600', // Cache for 10 minutes
+          'X-Cache-Status': 'MISS'
+        }
+      });
+    }
+
+    // Return cached data
+    console.log('⚡ Serving from KV cache');
+    const songsData = JSON.parse(cachedData);
+
+    return new Response(JSON.stringify(songsData), {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Cache-Control': 'public, max-age=600' // Cache for 10 minutes
+        'Cache-Control': 'public, max-age=600', // Cache for 10 minutes
+        'X-Cache-Status': 'HIT',
+        'X-Cache-Timestamp': await env.PARTITUR_DATA_CACHE.get('cache_timestamp')
       }
     });
 
