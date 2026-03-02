@@ -643,7 +643,7 @@ function scrollToBar(barNumber) {
 
   const currentScrollY = window.scrollY;
   const targetPageY = minTop + currentScrollY;
-  const desiredScrollY = barNumber === 0 ? 0 : targetPageY - HEADER_HEIGHT - padding;
+  const desiredScrollY = targetPageY - HEADER_HEIGHT - padding;
 
   window.scrollTo({
     top: desiredScrollY,

@@ -603,6 +603,17 @@ export class Synchronisator {
         this.callbacks.onPlayStateChange(false);
         this.stop();
         this.audio.currentTime = 0;
+        // Scroll to top after 1000 ms
+        setTimeout(() => {
+          const currentBar = document.getElementById('current_bar');
+          if (currentBar && window.sync) {
+            currentBar.innerText = window.sync.firstBarNumber?.toString() || '1';
+          }
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }, 1000);
       });
 
       // Seeking handlers - handle bar snapping and visual sync

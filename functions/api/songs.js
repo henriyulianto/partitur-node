@@ -132,7 +132,22 @@ export async function onRequest(context) {
     });
 
     if (!commitsResponse.ok) {
-      throw new Error(`GitHub commits API error: ${commitsResponse.status}`);
+      if (!cachedData) {
+        throw new Error(`GitHub commits API error: ${commitsResponse.status}`);
+      }
+      console.log(`⚠️ GitHub commits API error: ${commitsResponse.status}, but serving from cache`);
+      // Return cached data directly if commits API fails but cache exists
+      const songsData = JSON.parse(cachedData);
+      return new Response(JSON.stringify(songsData), {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          'Cache-Control': 'public, max-age=600',
+          'X-Cache-Status': 'STALE'
+        }
+      });
     }
 
     const commits = await commitsResponse.json();

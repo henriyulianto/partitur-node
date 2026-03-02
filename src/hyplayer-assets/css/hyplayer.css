@@ -363,13 +363,16 @@ body.svg-at-top .hyplayer-root #button_scroll_to_top {
 
 /* Bar spy (progress indicator) */
 .hyplayer-root #bar_spy {
-  background-color: rgb(242, 243, 244) !important;
+  background-color: rgb(242, 243, 244);
   height: 32px;
   margin: 4px;
-  color: var(--bach-dark) !important;
+  color: var(--bach-dark);
   font-weight: normal;
-  font-size: 0.8rem;
+  font-size: 1rem;
   transition: filter 1s ease, width 1s ease;
+  display: table;
+  table-layout: fixed;
+  width: 7.5rem;
 }
 
 /* #pdf_download {
@@ -402,6 +405,8 @@ body.seeking .hyplayer-root #bar_spy :first-child {
 
 .hyplayer-root #bar_spy span {
   text-align: center;
+  display: table-cell;
+  vertical-align: middle;
 }
 
 /* Header border styling */

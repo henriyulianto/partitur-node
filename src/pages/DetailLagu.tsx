@@ -96,9 +96,10 @@ const DetailLagu = () => {
 
   return (
     <AppLayout>
-      <div className="p-6 md:p-8 max-w-6xl bg-popover min-h-[calc(100vh-3.5rem)]">
+      <div className="p-6 md:p-8 max-w-6xl bg-popover min-h-[calc(100vh-3.5rem)]"
+        style={{ paddingTop: '0px' }}>
         {/* Header lagu */}
-        <div className="mb-8">
+        {/* <div className="mb-8">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
@@ -111,10 +112,10 @@ const DetailLagu = () => {
               <KaryaBadge jenis={normalizeWorkType(lagu.workInfo.workType)} />
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Music Player Section */}
-        <div className="mb-8 hyplayer-root">
+        <div className="mb-8 top-14 hyplayer-root">
           {/* Fixed header with audio controls */}
           <div className="sticky top-14 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b">
             <div className="container mx-auto px-4 py-3">
