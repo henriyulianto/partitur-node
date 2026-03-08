@@ -11,7 +11,8 @@
     "preview": "bunx --bun vite preview",
     "test": "bunx --bun vitest run",
     "test:watch": "bunx --bun vitest",
-    "wrangler:dev": "bun run build:dev && bunx wrangler pages dev"
+    "wrangler:dev": "bun run build:dev && bunx wrangler pages dev",
+    "generate-index": "node scripts/generate-index-simple.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

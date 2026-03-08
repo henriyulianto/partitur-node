@@ -173,17 +173,18 @@
   }
 
   .hyplayer-root #svg-container>svg path[data-ref] {
-    transition: fill 1.5s ease, filter 1.5s ease, transform 1.5s ease,
+    /* transition: fill 1.5s ease, filter 1.5s ease, transform 1.5s ease,
       stroke 1.5s ease, stroke-width 1.5s ease, stroke-opacity 1.5s ease;
     transform: scale(1);
     transform-box: fill-box;
     transform-origin: center;
     stroke-width: 0;
-    stroke-opacity: 0;
+    stroke-opacity: 0; */
+    transition: none;
   }
 
   .hyplayer-root #svg-container>svg path[data-ref].active {
-    transition: fill 0.15s linear, filter 0.15s linear, transform 0.15s linear,
+    /* transition: fill 0.15s linear, filter 0.15s linear, transform 0.15s linear,
       stroke 0.15s linear, stroke-width 0.15s linear,
       stroke-opacity 0.15s linear;
     transform: scale(1.125);
@@ -191,7 +192,9 @@
     transform-origin: center;
     stroke-width: 0.125;
     stroke-opacity: 0.667;
-    animation: noteFlash 0.2s ease-out;
+    animation: noteFlash 0.2s ease-out; */
+    stroke-width: 0.125;
+    stroke-opacity: 0.667;
   }
 
   .hyplayer-root #svg-container>svg a.notangka {
@@ -201,7 +204,7 @@
     transform-box: border-box;
     transform-origin: center;
     stroke-width: 0;
-    stroke-opacity: 0;
+    /* stroke-opacity: 0; */
     text-decoration: none !important;
   }
 
@@ -217,7 +220,6 @@
     animation: noteFlash 0.2s ease-out;
     text-decoration: inherit !important;
   }
-
 }
 
 /* Channel colors (applies to both mobile and desktop) */
@@ -339,7 +341,7 @@ body.playing:not(.seeking) .hyplayer-root #svg-container>svg rect[data-bar] {
   fill: var(--hy-lightblue);
   /* Override SVG's fill:none */
   /* fill: none; */
-  fill-opacity: 0.15;
+  fill-opacity: 0.0;
   filter: none;
 }
 

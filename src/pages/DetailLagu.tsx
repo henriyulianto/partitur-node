@@ -96,7 +96,7 @@ const DetailLagu = () => {
 
   return (
     <AppLayout>
-      <div className="p-6 md:p-8 max-w-6xl bg-popover min-h-[calc(100vh-3.5rem)]"
+      <div className="p-6 md:p-8 max-w-7xl bg-popover min-h-[calc(100vh-3.5rem)]"
         style={{ paddingTop: '0px' }}>
         {/* Header lagu */}
         {/* <div className="mb-8">

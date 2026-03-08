@@ -60,7 +60,7 @@ const Index = () => {
 
   return (
     <AppLayout>
-      <div className="p-6 md:p-8 max-w-6xl">
+      <div className="p-6 md:p-8 max-w-7xl">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
             Animasi Partitur Musik

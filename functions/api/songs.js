@@ -116,6 +116,57 @@ export async function onRequest(context) {
   }
 
   try {
+    // Check if running in local-only mode
+    const LOCAL_ONLY = env.LOCAL_ONLY === 'true';
+
+    if (LOCAL_ONLY) {
+      console.log('🏠 Running in LOCAL_ONLY mode - serving from local filesystem');
+
+      try {
+        // Read data from local filesystem
+        const fs = await import('fs');
+        const path = await import('path');
+
+        const dataPath = path.join(process.cwd(), 'public', 'partitur-data');
+        const indexPath = path.join(dataPath, 'index.json');
+
+        // Check if index.json exists
+        if (!fs.existsSync(indexPath)) {
+          return new Response(JSON.stringify({ error: 'Local data not found. Ensure public/partitur-data/index.json exists' }), {
+            status: 503,
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          });
+        }
+
+        // Read and parse the local index.json
+        const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+
+        return new Response(JSON.stringify(indexData), {
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Cache-Control': 'public, max-age=600',
+            'X-Data-Source': 'LOCAL_FILESYSTEM'
+          }
+        });
+
+      } catch (error) {
+        console.error('Error reading local data:', error);
+        return new Response(JSON.stringify({ error: 'Failed to read local data' }), {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        });
+      }
+    }
+
     // GitHub API configuration
     const GITHUB_OWNER = env.GITHUB_OWNER || 'henriyulianto';
     const GITHUB_REPO = env.GITHUB_REPO || 'partitur-data';

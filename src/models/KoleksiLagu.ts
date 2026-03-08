@@ -14,6 +14,7 @@ export class KoleksiLagu {
   private static USE_WORKERS_API = true;
   private static GITHUB_TOKEN?: string; // Optional: Personal Access Token for higher rate limits
   private static WORKERS_API_URL = '/api/songs';
+  private static BYPASS_API = import.meta.env.VITE_BYPASS_API === 'true';
 
   // Storage key for localStorage
   private static TOKEN_STORAGE_KEY = 'partitur-github-token';
@@ -74,7 +75,10 @@ export class KoleksiLagu {
   /**
    * Get current API source
    */
-  static getAPISource(): 'workers' | 'github' {
+  static getAPISource(): 'workers' | 'github' | 'local' {
+    if (KoleksiLagu.BYPASS_API) {
+      return 'local';
+    }
     return KoleksiLagu.USE_WORKERS_API ? 'workers' : 'github';
   }
 
@@ -86,10 +90,17 @@ export class KoleksiLagu {
     const hasToken = !!KoleksiLagu.GITHUB_TOKEN;
     const source = KoleksiLagu.getAPISource();
 
+    let limit: string;
+    if (source === 'local') {
+      limit = 'No limit (local filesystem)';
+    } else {
+      limit = hasToken ? '5,000/hour' : '60/hour';
+    }
+
     return {
       hasToken,
       source,
-      limit: hasToken ? '5,000/hour' : '60/hour'
+      limit
     };
   }
 
@@ -116,11 +127,36 @@ export class KoleksiLagu {
 
   /**
    * Load lagu from API
-   * Fetches data from GitHub API or Cloudflare Workers API
+   * Fetches data from GitHub API, Cloudflare Workers API, or local filesystem
    */
   private async _loadDaftarLagu() {
     try {
-      if (KoleksiLagu.USE_WORKERS_API) {
+      if (KoleksiLagu.BYPASS_API) {
+        console.log('🏠 Bypassing API - loading songs from local filesystem...');
+
+        try {
+          // Fetch from local dist/partitur-data/index.json
+          const response = await fetch('/partitur-data/index.json');
+
+          if (!response.ok) {
+            throw new Error(`Failed to fetch local data: ${response.status}`);
+          }
+
+          const songs = await response.json();
+
+          if (Array.isArray(songs) && songs.length > 0) {
+            songs.forEach(lagu => this.addLagu(lagu));
+            console.log(`✅ Loaded ${songs.length} songs from local filesystem`);
+          } else {
+            console.warn('⚠️ No songs found in local data. Make sure dist/partitur-data/index.json exists.');
+          }
+
+        } catch (error) {
+          console.error('❌ Error loading local data:', error);
+          throw new Error('Failed to load local songs data. Make sure dist/partitur-data/index.json exists.');
+        }
+
+      } else if (KoleksiLagu.USE_WORKERS_API) {
         console.log('Loading songs from Workers API...');
         const response = await fetch(KoleksiLagu.WORKERS_API_URL, {
           headers: {

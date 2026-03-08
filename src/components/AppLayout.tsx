@@ -182,7 +182,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
         {/* Main content */}
         <main className="flex-1 min-w-0 flex justify-center">
-          <div className="w-full max-w-6xl">{children}</div>
+          <div className="w-full max-w-7xl">{children}</div>
         </main>
       </div>
 

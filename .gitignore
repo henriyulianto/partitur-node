@@ -48,3 +48,5 @@ logs/
 
 # Temporary folder
 .tmp/
+
+public/partitur-data
