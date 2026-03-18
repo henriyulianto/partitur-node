@@ -82,6 +82,7 @@
   display: grid;
   place-items: start center;
   scroll-margin-top: var(--header-height);
+  background-color: white;
 }
 
 .hyplayer-root #svg-container>svg {

@@ -1,6 +1,9 @@
 import { defineConfig } from "vite";
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+
+const isApiBypassMode = process.env.VITE_BYPASS_API === 'true';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -18,7 +21,19 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: isApiBypassMode
+            ? 'data/partitur-data/__unpublished/*'
+            : 'data/partitur-data/*',
+          dest: 'partitur-data',
+        },
+      ],
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

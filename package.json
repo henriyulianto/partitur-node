@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
-    "build": "bunx --bun vite build",
-    "build:dev": "bunx --bun vite build --mode development",
+    "build": "bun run generate-index && bunx --bun vite build",
+    "build:dev": "bun run generate-index && bunx --bun vite build --mode development",
     "lint": "bunx --bun eslint .",
     "preview": "bunx --bun vite preview",
     "test": "bunx --bun vitest run",
@@ -93,6 +93,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",
+    "vite-plugin-static-copy": "^3.2.0",
     "vitest": "^4.0.18",
     "wrangler": "^4.68.1"
   },

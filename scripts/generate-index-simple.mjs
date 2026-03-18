@@ -8,6 +8,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+process.loadEnvFile('.env.local');
+const isApiBypassMode = process.env.VITE_BYPASS_API === 'true';
+
 /**
  * Get raw GitHub file URL (for compatibility)
  */
@@ -81,7 +84,9 @@ function processSongDirectory(songDir, baseDataPath) {
  * Generate index.json from local partitur-data directory
  */
 async function generateIndexJson() {
-  const publicDataPath = path.join(__dirname, '..', 'public', 'partitur-data');
+  const publicDataPath = isApiBypassMode
+    ? path.join(__dirname, '..', 'data', 'partitur-data', '__unpublished')
+    : path.join(__dirname, '..', 'data', 'partitur-data');
   const distDataPath = path.join(__dirname, '..', 'dist', 'partitur-data');
 
   console.log('🔍 Scanning partitur-data directory...');
@@ -125,7 +130,9 @@ async function generateIndexJson() {
   songs.sort((a, b) => a.workInfo.title.localeCompare(b.workInfo.title));
 
   // Create output directories if they don't exist
-  const publicOutputDir = path.join(__dirname, '..', 'public', 'partitur-data');
+  const publicOutputDir = isApiBypassMode
+    ? path.join(__dirname, '..', 'data', 'partitur-data', '__unpublished')
+    : path.join(__dirname, '..', 'data', 'partitur-data');
   const distOutputDir = path.join(__dirname, '..', 'dist', 'partitur-data');
 
   if (!fs.existsSync(publicOutputDir)) {
@@ -170,11 +177,15 @@ async function generateIndexJson() {
  * Generate individual song data files
  */
 async function generateSongDataFiles() {
-  const publicDataPath = path.join(__dirname, '..', 'public', 'partitur-data');
+  const publicDataPath = isApiBypassMode
+    ? path.join(__dirname, '..', 'data', 'partitur-data', '__unpublished')
+    : path.join(__dirname, '..', 'data', 'partitur-data');
   const distDataPath = path.join(__dirname, '..', 'dist', 'partitur-data');
 
   const sourcePath = fs.existsSync(publicDataPath) ? publicDataPath : distDataPath;
-  const publicOutputDir = path.join(__dirname, '..', 'public', 'partitur-data');
+  const publicOutputDir = isApiBypassMode
+    ? path.join(__dirname, '..', 'data', 'partitur-data', '__unpublished')
+    : path.join(__dirname, '..', 'data', 'partitur-data');
   const distOutputDir = path.join(__dirname, '..', 'dist', 'partitur-data');
 
   console.log('\n🔧 Generating individual song data files...');
@@ -231,7 +242,7 @@ async function main() {
 }
 
 // Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
   main();
 }
 
