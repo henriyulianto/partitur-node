@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    viteStaticCopy({
+    isApiBypassMode ? viteStaticCopy({
       targets: [
         {
           src: isApiBypassMode
@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => ({
           dest: 'partitur-data',
         },
       ],
-    }),
+    }) : undefined,
   ],
   resolve: {
     alias: {
