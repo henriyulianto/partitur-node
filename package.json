@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
-    "build": "bun run generate-index && bunx --bun vite build",
-    "build:dev": "bun run generate-index && bunx --bun vite build --mode development",
+    "build": "bunx --bun vite build",
+    "build:dev": "bunx --bun vite build --mode development",
     "lint": "bunx --bun eslint .",
     "preview": "bunx --bun vite preview",
     "test": "bunx --bun vitest run",
