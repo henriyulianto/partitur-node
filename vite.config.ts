@@ -4,6 +4,11 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 const isApiBypassMode = process.env.VITE_BYPASS_API === 'true';
+const useUnpublishedData = process.env.VITE_USE_UNPUBLISHED_DATA === 'true';
+const apiBypassDataDir = useUnpublishedData
+  ? 'data/partitur-data/__unpublished/*'
+  : 'data/partitur-data/*';
+const apiBypassDestDir = 'partitur-data';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -26,10 +31,8 @@ export default defineConfig(({ mode }) => ({
     isApiBypassMode ? viteStaticCopy({
       targets: [
         {
-          src: isApiBypassMode
-            ? 'data/partitur-data/__unpublished/*'
-            : 'data/partitur-data/*',
-          dest: 'partitur-data',
+          src: apiBypassDataDir,
+          dest: apiBypassDestDir,
         },
       ],
     }) : undefined,

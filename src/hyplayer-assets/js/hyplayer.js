@@ -623,6 +623,7 @@ function scrollToBar(barNumber) {
   if (!sync) return;
 
   const barData = sync.barCache[barNumber];
+  // console.debug('barData:', barData);
   if (!barData || !barData.elements || barData.elements.length === 0) return;
 
   const barElements = barData.elements;
@@ -630,20 +631,26 @@ function scrollToBar(barNumber) {
   let minTop = Infinity, maxBottom = -Infinity;
   barElements.forEach(barElement => {
     const { top, bottom } = barElement.getBoundingClientRect();
-    minTop = Math.min(minTop, top);
-    maxBottom = Math.max(maxBottom, bottom);
+    const height = bottom - top;
+    minTop = Math.min(minTop, top - height);
+    maxBottom = Math.max(maxBottom, bottom + height);
   });
 
-  const padding = 32;
-  const viewportTop = HEADER_HEIGHT + padding;
+  const barHeight = maxBottom - minTop;
+  console.debug('barHeight:', barHeight);
+
+  const padding = 64;
+  const viewportTop = HEADER_HEIGHT;
   const viewportBottom = window.innerHeight - padding;
   const isFullyVisible = minTop >= viewportTop && maxBottom <= viewportBottom;
 
+  // console.debug('maxBottom, viewportBottom, isFullyVisible',
+  //   maxBottom, viewportBottom, isFullyVisible)
   if (isFullyVisible) return;
 
   const currentScrollY = window.scrollY;
   const targetPageY = minTop + currentScrollY;
-  const desiredScrollY = targetPageY - HEADER_HEIGHT - padding;
+  let desiredScrollY = targetPageY - HEADER_HEIGHT - padding + barHeight / 4;
 
   window.scrollTo({
     top: desiredScrollY,
@@ -658,10 +665,45 @@ function scrollToBar(barNumber) {
 function setPlayingState(isPlayingState) {
   if (!bodyGlobal) return;
 
+  const hyplayerControls = document.getElementById("hyplayer-controls")
+
   if (isPlayingState) {
     bodyGlobal?.classList.add('playing');
+    // Sembunyikan controls dengan scroll ke bawah
+    hyplayerControls.style.transform = 'translateY(100%)';
+    hyplayerControls.style.transition = 'transform 0.3s ease-in-out';
   } else {
     bodyGlobal?.classList.remove('playing');
+    // Tampilkan controls kembali
+    hyplayerControls.style.transform = 'translateY(0)';
+    hyplayerControls.style.transition = 'transform 0.3s ease-in-out';
+  }
+}
+
+// =============================================================================
+// KEYBOARD CONTROL FUNCTIONS
+// =============================================================================
+
+function togglePlayPause() {
+  if (!audio) return;
+
+  if (audio.paused) {
+    audio.play();
+  } else {
+    audio.pause();
+  }
+}
+
+function toggleHyplayerControls() {
+  const hyplayerControls = document.getElementById("hyplayer-controls");
+  if (!hyplayerControls) return;
+
+  const isHidden = hyplayerControls.style.transform === 'translateY(100%)';
+
+  if (isHidden) {
+    hyplayerControls.style.transform = 'translateY(0)';
+  } else {
+    hyplayerControls.style.transform = 'translateY(100%)';
   }
 }
 
@@ -835,6 +877,21 @@ function initEventHandlers() {
   });
 
   window.addEventListener('scroll', debouncedCheckScroll);
+
+  // Keyboard event handlers
+  window.addEventListener('keydown', (e) => {
+    // SPACE: play/pause
+    if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      togglePlayPause();
+    }
+
+    // Ctrl+Shift+P: toggle hyplayer controls
+    if (e.ctrlKey && e.altKey && e.code === 'KeyP') {
+      e.preventDefault();
+      toggleHyplayerControls();
+    }
+  });
 
   // Audio event handlers are now managed by Synchronisator.initializeAudioEventHandlers()
 }
